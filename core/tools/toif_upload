@@ -1,0 +1,12 @@
+#!/usr/bin/env python3
+import sys
+from toif_convert import png2toif
+from trezorlib.client import TrezorClient
+from trezorlib.transport import get_transport
+from trezorlib.ui import ClickUI
+from trezorlib import device
+
+trezor = TrezorClient(get_transport(), ui=ClickUI())
+
+data = png2toif(open(sys.argv[1], "rb").read())
+device.apply_settings(trezor, homescreen=data)
