@@ -95,6 +95,7 @@ extern Storage configUpdate;
 
 void config_init(void);
 void session_clear(bool lock);
+void session_lock(void);
 void session_clearCache(Session *session);
 
 void config_loadDevice(const LoadDevice *msg);

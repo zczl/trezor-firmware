@@ -407,12 +407,12 @@ void config_init(void) {
 }
 
 void session_clear(bool lock) {
-  if (activeSessionCache != NULL) {
-    session_clearCache(activeSessionCache);
-    activeSessionCache = NULL;
+  for (uint8_t i = 0; i < MAX_SESSIONS_COUNT; i++) {
+    session_clearCache(sessionsCache + i);
   }
+  activeSessionCache = NULL;
   if (lock) {
-    storage_lock();
+    session_lock();
   }
 }
 
@@ -422,6 +422,8 @@ void session_clearCache(Session *session) {
   memzero(session->seed, sizeof(session->seed));
   session->seedCached = false;
 }
+
+void session_lock(void) { storage_lock(); }
 
 static void get_u2froot_callback(uint32_t iter, uint32_t total) {
   layoutProgress(_("Updating"), 1000 * iter / total);

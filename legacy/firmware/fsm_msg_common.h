@@ -347,7 +347,9 @@ void fsm_msgCancel(const Cancel *msg) {
 
 void fsm_msgClearSession(const ClearSession *msg) {
   (void)msg;
-  session_clear(true);  // clear PIN as well
+  // we do not actually clear the session, we just lock it
+  // TODO: the message should be called LockSession see #819
+  session_lock();
   layoutScreensaver();
   fsm_sendSuccess(_("Session cleared"));
 }
