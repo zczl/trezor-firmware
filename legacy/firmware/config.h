@@ -56,6 +56,13 @@ typedef struct {
   STORAGE_BYTES(public_key, 33);
 } StorageHDNode;
 
+typedef struct {
+  uint8_t id[32];
+  uint32_t usage;
+  uint8_t seed[64];
+  bool seedCached;  // TODO: should be secbool or ok?
+} Session;
+
 typedef struct _Storage {
   uint32_t version;
 
@@ -88,6 +95,7 @@ extern Storage configUpdate;
 
 void config_init(void);
 void session_clear(bool lock);
+void session_clearCache(Session *session);
 
 void config_loadDevice(const LoadDevice *msg);
 
@@ -108,7 +116,10 @@ bool config_getPassphraseProtection(bool *passphrase_protection);
 bool config_getHomescreen(uint8_t *dest, uint16_t dest_size);
 void config_setHomescreen(const uint8_t *data, uint32_t size);
 
-const uint8_t *session_getSessionId(void);
+uint8_t session_findLRU(void);
+uint8_t session_findSession(const uint8_t *sessionId);
+uint8_t session_findEmpty(void);
+uint8_t *session_startSession(const uint8_t *received_session_id);
 
 bool config_setMnemonic(const char *mnemonic);
 bool config_containsMnemonic(const char *mnemonic);

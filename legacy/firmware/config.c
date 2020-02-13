@@ -81,6 +81,8 @@ static const uint32_t META_MAGIC_V10 = 0xFFFFFFFF;
 #define KEY_U2F_ROOT (17 | APP | FLAG_PUBLIC_SHIFTED)         // node
 #define KEY_DEBUG_LINK_PIN (255 | APP | FLAG_PUBLIC_SHIFTED)  // string(10)
 
+#define MAX_SESSIONS_COUNT 10
+
 // The PIN value corresponding to an empty PIN.
 static const uint32_t PIN_EMPTY = 1;
 
@@ -120,11 +122,10 @@ be added to the storage u2f_counter to get the real counter value.
  * storage.u2f_counter + config_u2f_offset.
  * This corresponds to the number of cleared bits in the U2FAREA.
  */
-static secbool sessionSeedCached;
-static uint8_t CONFIDENTIAL sessionSeed[64];
+static CONFIDENTIAL Session sessionsCache[10];
+static Session *activeSessionCache;
 
-static secbool sessionIdCached;
-static uint8_t sessionId[32];
+static uint32_t sessionLRUCounter = 0;
 
 #define autoLockDelayMsDefault (10 * 60 * 1000U)  // 10 minutes
 static secbool autoLockDelayMsCached = secfalse;
@@ -406,13 +407,20 @@ void config_init(void) {
 }
 
 void session_clear(bool lock) {
-  sessionSeedCached = secfalse;
-  memzero(&sessionSeed, sizeof(sessionSeed));
-  sessionIdCached = secfalse;
-  memzero(&sessionId, sizeof(sessionId));
+  if (activeSessionCache != NULL) {
+    session_clearCache(activeSessionCache);
+    activeSessionCache = NULL;
+  }
   if (lock) {
     storage_lock();
   }
+}
+
+void session_clearCache(Session *session) {
+  session->usage = 0;
+  memzero(session->id, sizeof(session->id));
+  memzero(session->seed, sizeof(session->seed));
+  session->seedCached = false;
 }
 
 static void get_u2froot_callback(uint32_t iter, uint32_t total) {
@@ -422,11 +430,11 @@ static void get_u2froot_callback(uint32_t iter, uint32_t total) {
 static void config_compute_u2froot(const char *mnemonic,
                                    StorageHDNode *u2froot) {
   static CONFIDENTIAL HDNode node;
+  static CONFIDENTIAL uint8_t seed[64];
   char oldTiny = usbTiny(1);
-  mnemonic_to_seed(mnemonic, "", sessionSeed,
-                   get_u2froot_callback);  // BIP-0039
+  mnemonic_to_seed(mnemonic, "", seed, get_u2froot_callback);  // BIP-0039
   usbTiny(oldTiny);
-  hdnode_from_seed(sessionSeed, 64, NIST256P1_NAME, &node);
+  hdnode_from_seed(seed, 64, NIST256P1_NAME, &node);
   hdnode_private_ckd(&node, U2F_KEY_PATH);
   u2froot->depth = node.depth;
   u2froot->child_num = U2F_KEY_PATH;
@@ -437,6 +445,7 @@ static void config_compute_u2froot(const char *mnemonic,
   memcpy(u2froot->private_key.bytes, node.private_key,
          sizeof(node.private_key));
   memzero(&node, sizeof(node));
+  memzero(&seed, sizeof(node));
   session_clear(false);  // invalidate seed cache
 }
 
@@ -551,8 +560,9 @@ static void get_root_node_callback(uint32_t iter, uint32_t total) {
 
 const uint8_t *config_getSeed(void) {
   // root node is properly cached
-  if (sectrue == sessionSeedCached) {
-    return sessionSeed;
+  if ((activeSessionCache != NULL) &&
+      (activeSessionCache->seedCached == true)) {
+    return activeSessionCache->seed;
   }
 
   // if storage has mnemonic, convert it to node and use it
@@ -575,13 +585,13 @@ const uint8_t *config_getSeed(void) {
       }
     }
     char oldTiny = usbTiny(1);
-    mnemonic_to_seed(mnemonic, passphrase, sessionSeed,
+    mnemonic_to_seed(mnemonic, passphrase, activeSessionCache->seed,
                      get_root_node_callback);  // BIP-0039
     memzero(mnemonic, sizeof(mnemonic));
     memzero(passphrase, sizeof(passphrase));
     usbTiny(oldTiny);
-    sessionSeedCached = sectrue;
-    return sessionSeed;
+    activeSessionCache->seedCached = true;
+    return activeSessionCache->seed;
   } else {
     fsm_sendFailure(FailureType_Failure_NotInitialized,
                     _("Device not initialized"));
@@ -772,12 +782,69 @@ bool config_changeWipeCode(const char *pin, const char *wipe_code) {
   return sectrue == ret;
 }
 
-const uint8_t *session_getSessionId(void) {
-  if (!sessionIdCached) {
-    random_buffer(sessionId, 32);
+uint8_t session_findLRU(void) {
+  uint8_t lowest_index = MAX_SESSIONS_COUNT;
+  uint32_t lowest = sessionLRUCounter;
+  for (uint8_t i = 0; i < MAX_SESSIONS_COUNT; i++) {
+    if (sessionsCache[i].usage < lowest) {
+      lowest = sessionsCache[i].usage;
+      lowest_index = i;
+    }
   }
-  sessionIdCached = sectrue;
-  return sessionId;
+  // TODO: abort if lowest_index == MAX_SESSIONS_COUNT?
+  // TODO: it should never happen, so it is more of "internal" check
+  return lowest_index;
+}
+
+uint8_t session_findSession(const uint8_t *sessionId) {
+  for (uint8_t i = 0; i < MAX_SESSIONS_COUNT; i++) {
+    if (sessionsCache[i].usage != 0) {
+      if (memcmp(sessionsCache[i].id, sessionId, 32) == 0) {  // session found
+        return i;
+      }
+    }
+  }
+  return MAX_SESSIONS_COUNT;
+}
+
+uint8_t session_findEmpty(void) {
+  for (uint8_t i = 0; i < MAX_SESSIONS_COUNT; i++) {
+    if (sessionsCache[i].usage == 0) {
+      return i;
+    }
+  }
+  return MAX_SESSIONS_COUNT;
+}
+
+uint8_t *session_startSession(const uint8_t *received_session_id) {
+  int session_index = MAX_SESSIONS_COUNT;
+  if (received_session_id != NULL) {
+    session_index = session_findSession(received_session_id);
+  }
+  if (session_index != MAX_SESSIONS_COUNT) {
+    // session found in currently stored sessions
+    sessionLRUCounter++;
+    sessionsCache[session_index].usage = sessionLRUCounter;
+    activeSessionCache = sessionsCache + session_index;
+    return activeSessionCache->id;
+  } else {
+    // if not found or session_id not provided try to find an empty one
+    session_index = session_findEmpty();
+  }
+  if (session_index == MAX_SESSIONS_COUNT) {
+    // if still no success, we need to clear the LRU item
+    session_index = session_findLRU();
+  }
+
+  // now it is guaranteed `session_index` is the place to start a new session
+  sessionLRUCounter++;
+  session_clearCache(sessionsCache + session_index);
+
+  sessionsCache[session_index].usage = sessionLRUCounter;
+  random_buffer(sessionsCache[session_index].id, 32);
+
+  activeSessionCache = sessionsCache + session_index;
+  return activeSessionCache->id;
 }
 
 bool session_isUnlocked(void) { return sectrue == storage_is_unlocked(); }
