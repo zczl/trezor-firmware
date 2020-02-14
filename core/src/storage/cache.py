@@ -42,6 +42,10 @@ def start_session(received_session_id: bytes = None) -> bytes:
     return _active_session_id
 
 
+def is_session_started() -> bool:
+    return _active_session_id is not None
+
+
 def set(key: int, value: Any) -> None:
     if _active_session_id is None:
         raise RuntimeError  # no session active
