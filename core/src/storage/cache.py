@@ -28,9 +28,11 @@ def _move_session_ids_queue(session_id: bytes) -> None:
     # Move the LRU session ids queue.
     if session_id in _session_ids:
         _session_ids.remove(session_id)
-    elif len(_session_ids) == _MAX_SESSIONS_COUNT:
-        remove_session_id = _session_ids.pop()
-        del _caches[remove_session_id]
+    else:
+        while len(_session_ids) >= _MAX_SESSIONS_COUNT:
+            # should happen only once
+            remove_session_id = _session_ids.pop()
+            del _caches[remove_session_id]
 
     _session_ids.insert(0, session_id)
 
@@ -69,7 +71,7 @@ def get(key: int) -> Any:
     return _caches[_active_session_id].get(key)
 
 
-def clear() -> None:
+def clear_all() -> None:
     global _active_session_id
     global _caches
     global _session_ids

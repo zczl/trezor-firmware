@@ -17,24 +17,38 @@ class TestStorageCache(unittest.TestCase):
         session_id_b = cache.start_session()
         self.assertNotEqual(session_id_a, session_id_b)
 
+        cache.clear_all()
+        with self.assertRaises(RuntimeError):
+            cache.set(KEY, "something")
+        with self.assertRaises(RuntimeError):
+            cache.get(KEY)
+
     def test_session_queue(self):
         session_id = cache.start_session()
         self.assertEqual(cache.start_session(session_id), session_id)
+        cache.set(KEY, "A")
         for i in range(cache._MAX_SESSIONS_COUNT):
             cache.start_session()
         self.assertNotEqual(cache.start_session(session_id), session_id)
+        self.assertIsNone(cache.get(KEY))
 
     def test_get_set(self):
-        value = cache.get(KEY)
-        self.assertIsNone(value)
-
+        session_id1 = cache.start_session()
         cache.set(KEY, "hello")
-        value = cache.get(KEY)
-        self.assertEqual(value, "hello")
+        self.assertEqual(cache.get(KEY), "hello")
 
-        cache.clear()
-        value = cache.get(KEY)
-        self.assertIsNone(value)
+        session_id2 = cache.start_session()
+        cache.set(KEY, "world")
+        self.assertEqual(cache.get(KEY), "world")
+
+        cache.start_session(session_id2)
+        self.assertEqual(cache.get(KEY), "world")
+        cache.start_session(session_id1)
+        self.assertEqual(cache.get(KEY), "hello")
+
+        cache.clear_all()
+        with self.assertRaises(RuntimeError):
+            cache.get(KEY)
 
     @mock_storage
     def test_Initialize(self):

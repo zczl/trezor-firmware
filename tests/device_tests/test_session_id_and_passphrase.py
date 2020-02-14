@@ -170,23 +170,6 @@ def test_session_enable_passphrase(client):
 
 
 @pytest.mark.skip_ui
-@pytest.mark.setup_client(passphrase=True)
-def test_clear_session_passphrase(client):
-    # at first attempt, we are prompted for passphrase
-    assert _get_xpub(client, passphrase="A") == XPUB_PASSPHRASES["A"]
-
-    # now the passphrase is cached
-    assert _get_xpub(client, passphrase=None) == XPUB_PASSPHRASES["A"]
-
-    # Erase the cached passphrase
-    response = client.call(messages.Initialize())
-    assert isinstance(response, messages.Features)
-
-    # we have to enter passphrase again
-    assert _get_xpub(client, passphrase="A") == XPUB_PASSPHRASES["A"]
-
-
-@pytest.mark.skip_ui
 @pytest.mark.skip_t1
 @pytest.mark.setup_client(passphrase=True)
 def test_passphrase_on_device(client):
