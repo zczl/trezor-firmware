@@ -447,7 +447,7 @@ static void config_compute_u2froot(const char *mnemonic,
   memcpy(u2froot->private_key.bytes, node.private_key,
          sizeof(node.private_key));
   memzero(&node, sizeof(node));
-  memzero(&seed, sizeof(node));
+  memzero(&seed, sizeof(seed));
   session_clear(false);  // invalidate seed cache
 }
 
