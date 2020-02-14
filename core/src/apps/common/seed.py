@@ -140,8 +140,6 @@ def derive_slip21_node_without_passphrase(path: list) -> Slip21Node:
         raise Exception("Device is not initialized")
     seed = cache.get(cache.APP_COMMON_SEED_WITHOUT_PASSPHRASE)
     if seed is None:
-        if not cache.is_session_started():
-            cache.start_session()
         seed = mnemonic.get_seed(progress_bar=False)
         cache.set(cache.APP_COMMON_SEED_WITHOUT_PASSPHRASE, seed)
     node = Slip21Node(seed)
