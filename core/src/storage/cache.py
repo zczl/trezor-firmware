@@ -39,7 +39,7 @@ def _move_session_ids_queue(session_id: bytes) -> None:
 
 def start_session(received_session_id: bytes = None) -> bytes:
     if received_session_id and received_session_id in _session_ids:
-        session_id = bytes(received_session_id)
+        session_id = received_session_id
     else:
         session_id = random.bytes(32)
         _caches[session_id] = {}

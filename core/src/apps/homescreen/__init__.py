@@ -78,6 +78,8 @@ def get_features() -> Features:
 
 async def handle_Initialize(ctx: wire.Context, msg: Initialize) -> Features:
     features = get_features()
+    if msg.session_id:
+        msg.session_id = bytes(msg.session_id)
     features.session_id = cache.start_session(msg.session_id)
     return features
 
