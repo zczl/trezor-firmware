@@ -88,11 +88,12 @@ def get_subnode(node, i):
     I64 = hmac.HMAC(key=node.chain_code, msg=data, digestmod=hashlib.sha512).digest()
     I_left_as_exponent = string_to_number(I64[:32])
 
-    node_out = messages.HDNodeType()
-    node_out.depth = node.depth + 1
-    node_out.child_num = i
-    node_out.chain_code = I64[32:]
-    node_out.fingerprint = fingerprint(node.public_key)
+    node_out = messages.HDNodeType(
+        depth=node.depth + 1,
+        child_num=i,
+        chain_code=I64[32:],
+        fingerprint=fingerprint(node.public_key),
+    )
 
     # BIP32 magic converts old public key to new public point
     x, y = sec_to_public_pair(node.public_key)
@@ -130,11 +131,12 @@ def deserialize(xpub):
     if tools.btc_hash(data[:-4])[:4] != data[-4:]:
         raise ValueError("Checksum failed")
 
-    node = messages.HDNodeType()
-    node.depth = struct.unpack(">B", data[4:5])[0]
-    node.fingerprint = struct.unpack(">I", data[5:9])[0]
-    node.child_num = struct.unpack(">I", data[9:13])[0]
-    node.chain_code = data[13:45]
+    node = messages.HDNodeType(
+        depth=struct.unpack(">B", data[4:5])[0],
+        fingerprint=struct.unpack(">I", data[5:9])[0],
+        child_num=struct.unpack(">I", data[9:13])[0],
+        chain_code=data[13:45],
+    )
 
     key = data[45:-4]
     if key[0] == 0:
