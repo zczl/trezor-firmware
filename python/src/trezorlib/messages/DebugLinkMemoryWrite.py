@@ -15,6 +15,7 @@ class DebugLinkMemoryWrite(p.MessageType):
 
     def __init__(
         self,
+        *,
         address: int = None,
         memory: bytes = None,
         flash: bool = None,

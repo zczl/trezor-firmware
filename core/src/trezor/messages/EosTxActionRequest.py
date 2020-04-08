@@ -15,6 +15,7 @@ class EosTxActionRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         data_size: int = None,
     ) -> None:
         self.data_size = data_size

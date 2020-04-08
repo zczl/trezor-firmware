@@ -15,6 +15,7 @@ class StellarSetOptionsOp(p.MessageType):
 
     def __init__(
         self,
+        *,
         source_account: str = None,
         inflation_destination_account: str = None,
         clear_flags: int = None,

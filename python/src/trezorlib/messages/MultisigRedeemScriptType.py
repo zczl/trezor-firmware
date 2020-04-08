@@ -17,17 +17,18 @@ class MultisigRedeemScriptType(p.MessageType):
 
     def __init__(
         self,
+        *,
         pubkeys: List[HDNodePathType] = None,
         signatures: List[bytes] = None,
-        m: int = None,
         nodes: List[HDNodeType] = None,
         address_n: List[int] = None,
+        m: int = None,
     ) -> None:
         self.pubkeys = pubkeys if pubkeys is not None else []
         self.signatures = signatures if signatures is not None else []
-        self.m = m
         self.nodes = nodes if nodes is not None else []
         self.address_n = address_n if address_n is not None else []
+        self.m = m
 
     @classmethod
     def get_fields(cls) -> Dict:

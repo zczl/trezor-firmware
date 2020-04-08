@@ -16,10 +16,11 @@ class RecoveryDevice(p.MessageType):
 
     def __init__(
         self,
+        *,
         word_count: int = None,
         passphrase_protection: bool = None,
         pin_protection: bool = None,
-        language: str = None,
+        language: str = "en-US",
         label: str = None,
         enforce_wordlist: bool = None,
         type: EnumTypeRecoveryDeviceType = None,

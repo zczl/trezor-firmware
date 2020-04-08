@@ -15,6 +15,7 @@ class EosPublicKey(p.MessageType):
 
     def __init__(
         self,
+        *,
         wif_public_key: str = None,
         raw_public_key: bytes = None,
     ) -> None:

@@ -15,6 +15,7 @@ class Ping(p.MessageType):
 
     def __init__(
         self,
+        *,
         message: str = None,
         button_protection: bool = None,
     ) -> None:

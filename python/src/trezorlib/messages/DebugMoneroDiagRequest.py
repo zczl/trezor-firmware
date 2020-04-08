@@ -15,17 +15,18 @@ class DebugMoneroDiagRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
+        pd: List[int] = None,
         ins: int = None,
         p1: int = None,
         p2: int = None,
-        pd: List[int] = None,
         data1: bytes = None,
         data2: bytes = None,
     ) -> None:
+        self.pd = pd if pd is not None else []
         self.ins = ins
         self.p1 = p1
         self.p2 = p2
-        self.pd = pd if pd is not None else []
         self.data1 = data1
         self.data2 = data2
 

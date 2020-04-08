@@ -15,6 +15,7 @@ class DebugLinkMemory(p.MessageType):
 
     def __init__(
         self,
+        *,
         memory: bytes = None,
     ) -> None:
         self.memory = memory

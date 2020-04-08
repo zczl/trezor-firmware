@@ -16,13 +16,14 @@ class EosActionCommon(p.MessageType):
 
     def __init__(
         self,
+        *,
+        authorization: List[EosPermissionLevel] = None,
         account: int = None,
         name: int = None,
-        authorization: List[EosPermissionLevel] = None,
     ) -> None:
+        self.authorization = authorization if authorization is not None else []
         self.account = account
         self.name = name
-        self.authorization = authorization if authorization is not None else []
 
     @classmethod
     def get_fields(cls) -> Dict:

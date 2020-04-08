@@ -14,6 +14,7 @@ class BinanceCoin(p.MessageType):
 
     def __init__(
         self,
+        *,
         amount: int = None,
         denom: str = None,
     ) -> None:

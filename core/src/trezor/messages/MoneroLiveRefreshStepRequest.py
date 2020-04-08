@@ -15,6 +15,7 @@ class MoneroLiveRefreshStepRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         out_key: bytes = None,
         recv_deriv: bytes = None,
         real_out_idx: int = None,

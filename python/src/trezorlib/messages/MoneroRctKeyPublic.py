@@ -14,6 +14,7 @@ class MoneroRctKeyPublic(p.MessageType):
 
     def __init__(
         self,
+        *,
         dest: bytes = None,
         commitment: bytes = None,
     ) -> None:

@@ -15,6 +15,7 @@ class NEMMosaicSupplyChange(p.MessageType):
 
     def __init__(
         self,
+        *,
         namespace: str = None,
         mosaic: str = None,
         type: EnumTypeNEMSupplyChangeType = None,

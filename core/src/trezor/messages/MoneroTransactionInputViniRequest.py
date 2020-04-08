@@ -17,6 +17,7 @@ class MoneroTransactionInputViniRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         src_entr: MoneroTransactionSourceEntry = None,
         vini: bytes = None,
         vini_hmac: bytes = None,

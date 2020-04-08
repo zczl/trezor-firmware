@@ -16,6 +16,7 @@ class DebugLinkDecision(p.MessageType):
 
     def __init__(
         self,
+        *,
         yes_no: bool = None,
         swipe: EnumTypeDebugSwipeDirection = None,
         input: str = None,

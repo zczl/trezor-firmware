@@ -16,6 +16,7 @@ class WordRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         type: EnumTypeWordRequestType = None,
     ) -> None:
         self.type = type

@@ -15,6 +15,7 @@ class TezosBallotOp(p.MessageType):
 
     def __init__(
         self,
+        *,
         source: bytes = None,
         period: int = None,
         proposal: bytes = None,

@@ -15,6 +15,7 @@ class MessageSignature(p.MessageType):
 
     def __init__(
         self,
+        *,
         address: str = None,
         signature: bytes = None,
     ) -> None:

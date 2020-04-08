@@ -15,6 +15,7 @@ class CardanoTxRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         tx_index: int = None,
         tx_hash: bytes = None,
         tx_body: bytes = None,

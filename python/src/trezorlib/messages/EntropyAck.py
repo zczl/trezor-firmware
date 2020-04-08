@@ -15,6 +15,7 @@ class EntropyAck(p.MessageType):
 
     def __init__(
         self,
+        *,
         entropy: bytes = None,
     ) -> None:
         self.entropy = entropy

@@ -17,6 +17,7 @@ class MoneroTransactionSetOutputAck(p.MessageType):
 
     def __init__(
         self,
+        *,
         tx_out: bytes = None,
         vouti_hmac: bytes = None,
         rsig_data: MoneroTransactionRsigData = None,

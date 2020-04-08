@@ -15,6 +15,7 @@ class EthereumMessageSignature(p.MessageType):
 
     def __init__(
         self,
+        *,
         signature: bytes = None,
         address: str = None,
     ) -> None:

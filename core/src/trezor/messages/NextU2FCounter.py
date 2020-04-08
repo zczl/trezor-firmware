@@ -15,6 +15,7 @@ class NextU2FCounter(p.MessageType):
 
     def __init__(
         self,
+        *,
         u2f_counter: int = None,
     ) -> None:
         self.u2f_counter = u2f_counter

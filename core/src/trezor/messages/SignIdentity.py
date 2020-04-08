@@ -17,6 +17,7 @@ class SignIdentity(p.MessageType):
 
     def __init__(
         self,
+        *,
         identity: IdentityType = None,
         challenge_hidden: bytes = None,
         challenge_visual: str = None,

@@ -18,15 +18,16 @@ class LiskTransactionAsset(p.MessageType):
 
     def __init__(
         self,
+        *,
+        votes: List[str] = None,
         signature: LiskSignatureType = None,
         delegate: LiskDelegateType = None,
-        votes: List[str] = None,
         multisignature: LiskMultisignatureType = None,
         data: str = None,
     ) -> None:
+        self.votes = votes if votes is not None else []
         self.signature = signature
         self.delegate = delegate
-        self.votes = votes if votes is not None else []
         self.multisignature = multisignature
         self.data = data
 

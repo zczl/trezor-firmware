@@ -16,17 +16,18 @@ class NEMTransfer(p.MessageType):
 
     def __init__(
         self,
+        *,
+        mosaics: List[NEMMosaic] = None,
         recipient: str = None,
         amount: int = None,
         payload: bytes = None,
         public_key: bytes = None,
-        mosaics: List[NEMMosaic] = None,
     ) -> None:
+        self.mosaics = mosaics if mosaics is not None else []
         self.recipient = recipient
         self.amount = amount
         self.payload = payload
         self.public_key = public_key
-        self.mosaics = mosaics if mosaics is not None else []
 
     @classmethod
     def get_fields(cls) -> Dict:

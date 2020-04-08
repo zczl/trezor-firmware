@@ -14,6 +14,7 @@ class NEMProvisionNamespace(p.MessageType):
 
     def __init__(
         self,
+        *,
         namespace: str = None,
         parent: str = None,
         sink: str = None,

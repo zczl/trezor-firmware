@@ -14,20 +14,21 @@ class MoneroTransactionRsigData(p.MessageType):
 
     def __init__(
         self,
+        *,
+        grouping: List[int] = None,
+        rsig_parts: List[bytes] = None,
         rsig_type: int = None,
         offload_type: int = None,
-        grouping: List[int] = None,
         mask: bytes = None,
         rsig: bytes = None,
-        rsig_parts: List[bytes] = None,
         bp_version: int = None,
     ) -> None:
+        self.grouping = grouping if grouping is not None else []
+        self.rsig_parts = rsig_parts if rsig_parts is not None else []
         self.rsig_type = rsig_type
         self.offload_type = offload_type
-        self.grouping = grouping if grouping is not None else []
         self.mask = mask
         self.rsig = rsig
-        self.rsig_parts = rsig_parts if rsig_parts is not None else []
         self.bp_version = bp_version
 
     @classmethod

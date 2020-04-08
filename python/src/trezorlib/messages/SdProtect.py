@@ -16,6 +16,7 @@ class SdProtect(p.MessageType):
 
     def __init__(
         self,
+        *,
         operation: EnumTypeSdProtectOperationType = None,
     ) -> None:
         self.operation = operation

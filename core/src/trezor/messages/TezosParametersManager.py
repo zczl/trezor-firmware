@@ -16,6 +16,7 @@ class TezosParametersManager(p.MessageType):
 
     def __init__(
         self,
+        *,
         set_delegate: bytes = None,
         cancel_delegate: bool = None,
         transfer: TezosManagerTransfer = None,

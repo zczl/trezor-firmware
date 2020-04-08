@@ -15,6 +15,7 @@ class TezosSignedTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         signature: str = None,
         sig_op_contents: bytes = None,
         operation_hash: str = None,

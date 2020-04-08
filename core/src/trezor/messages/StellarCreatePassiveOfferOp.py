@@ -17,6 +17,7 @@ class StellarCreatePassiveOfferOp(p.MessageType):
 
     def __init__(
         self,
+        *,
         source_account: str = None,
         selling_asset: StellarAssetType = None,
         buying_asset: StellarAssetType = None,

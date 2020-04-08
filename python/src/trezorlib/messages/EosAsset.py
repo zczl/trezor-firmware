@@ -14,6 +14,7 @@ class EosAsset(p.MessageType):
 
     def __init__(
         self,
+        *,
         amount: int = None,
         symbol: int = None,
     ) -> None:

@@ -15,6 +15,7 @@ class StellarSignedTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         public_key: bytes = None,
         signature: bytes = None,
     ) -> None:

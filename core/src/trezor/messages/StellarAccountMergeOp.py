@@ -15,6 +15,7 @@ class StellarAccountMergeOp(p.MessageType):
 
     def __init__(
         self,
+        *,
         source_account: str = None,
         destination_account: str = None,
     ) -> None:

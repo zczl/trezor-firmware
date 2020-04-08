@@ -17,6 +17,7 @@ class StellarPaymentOp(p.MessageType):
 
     def __init__(
         self,
+        *,
         source_account: str = None,
         destination_account: str = None,
         asset: StellarAssetType = None,

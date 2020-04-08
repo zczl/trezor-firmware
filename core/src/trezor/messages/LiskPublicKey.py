@@ -15,6 +15,7 @@ class LiskPublicKey(p.MessageType):
 
     def __init__(
         self,
+        *,
         public_key: bytes = None,
     ) -> None:
         self.public_key = public_key

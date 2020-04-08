@@ -15,6 +15,7 @@ class TezosPublicKey(p.MessageType):
 
     def __init__(
         self,
+        *,
         public_key: str = None,
     ) -> None:
         self.public_key = public_key

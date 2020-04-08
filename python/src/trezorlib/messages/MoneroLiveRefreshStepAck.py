@@ -15,6 +15,7 @@ class MoneroLiveRefreshStepAck(p.MessageType):
 
     def __init__(
         self,
+        *,
         salt: bytes = None,
         key_image: bytes = None,
     ) -> None:

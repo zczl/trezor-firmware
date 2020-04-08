@@ -14,6 +14,7 @@ class EosPermissionLevel(p.MessageType):
 
     def __init__(
         self,
+        *,
         actor: int = None,
         permission: int = None,
     ) -> None:

@@ -15,10 +15,11 @@ class LoadDevice(p.MessageType):
 
     def __init__(
         self,
+        *,
         mnemonics: List[str] = None,
         pin: str = None,
         passphrase_protection: bool = None,
-        language: str = None,
+        language: str = "en-US",
         label: str = None,
         skip_checksum: bool = None,
         u2f_counter: int = None,

@@ -17,6 +17,7 @@ class GetECDHSessionKey(p.MessageType):
 
     def __init__(
         self,
+        *,
         identity: IdentityType = None,
         peer_public_key: bytes = None,
         ecdsa_curve_name: str = None,

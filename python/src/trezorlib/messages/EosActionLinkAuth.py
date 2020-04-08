@@ -14,6 +14,7 @@ class EosActionLinkAuth(p.MessageType):
 
     def __init__(
         self,
+        *,
         account: int = None,
         code: int = None,
         type: int = None,

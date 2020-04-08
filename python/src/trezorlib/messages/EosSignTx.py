@@ -17,6 +17,7 @@ class EosSignTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         chain_id: bytes = None,
         header: EosTxHeader = None,

@@ -15,6 +15,7 @@ class EosSignedTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         signature: str = None,
     ) -> None:
         self.signature = signature

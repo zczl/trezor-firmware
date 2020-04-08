@@ -19,6 +19,7 @@ class TxRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         request_type: EnumTypeRequestType = None,
         details: TxRequestDetailsType = None,
         serialized: TxRequestSerializedType = None,

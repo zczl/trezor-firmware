@@ -15,6 +15,8 @@ class NEMMosaicDefinition(p.MessageType):
 
     def __init__(
         self,
+        *,
+        networks: List[int] = None,
         name: str = None,
         ticker: str = None,
         namespace: str = None,
@@ -29,8 +31,8 @@ class NEMMosaicDefinition(p.MessageType):
         mutable_supply: bool = None,
         transferable: bool = None,
         description: str = None,
-        networks: List[int] = None,
     ) -> None:
+        self.networks = networks if networks is not None else []
         self.name = name
         self.ticker = ticker
         self.namespace = namespace
@@ -45,7 +47,6 @@ class NEMMosaicDefinition(p.MessageType):
         self.mutable_supply = mutable_supply
         self.transferable = transferable
         self.description = description
-        self.networks = networks if networks is not None else []
 
     @classmethod
     def get_fields(cls) -> Dict:

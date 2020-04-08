@@ -15,6 +15,7 @@ class DebugLinkReseedRandom(p.MessageType):
 
     def __init__(
         self,
+        *,
         value: int = None,
     ) -> None:
         self.value = value

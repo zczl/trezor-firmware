@@ -17,6 +17,7 @@ class MoneroTransactionInitAck(p.MessageType):
 
     def __init__(
         self,
+        *,
         hmacs: List[bytes] = None,
         rsig_data: MoneroTransactionRsigData = None,
     ) -> None:

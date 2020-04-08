@@ -14,6 +14,7 @@ class TxRequestDetailsType(p.MessageType):
 
     def __init__(
         self,
+        *,
         request_index: int = None,
         tx_hash: bytes = None,
         extra_data_len: int = None,

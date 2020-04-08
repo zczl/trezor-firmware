@@ -15,6 +15,7 @@ class RippleAddress(p.MessageType):
 
     def __init__(
         self,
+        *,
         address: str = None,
     ) -> None:
         self.address = address

@@ -15,6 +15,7 @@ class DebugLinkGetState(p.MessageType):
 
     def __init__(
         self,
+        *,
         wait_word_list: bool = None,
         wait_word_pos: bool = None,
         wait_layout: bool = None,

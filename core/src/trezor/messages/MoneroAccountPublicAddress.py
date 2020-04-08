@@ -14,6 +14,7 @@ class MoneroAccountPublicAddress(p.MessageType):
 
     def __init__(
         self,
+        *,
         spend_public_key: bytes = None,
         view_public_key: bytes = None,
     ) -> None:

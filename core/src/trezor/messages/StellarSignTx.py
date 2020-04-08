@@ -15,6 +15,7 @@ class StellarSignTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         network_passphrase: str = None,
         source_account: str = None,

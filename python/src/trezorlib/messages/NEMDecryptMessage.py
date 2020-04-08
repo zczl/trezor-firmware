@@ -15,6 +15,7 @@ class NEMDecryptMessage(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         network: int = None,
         public_key: bytes = None,

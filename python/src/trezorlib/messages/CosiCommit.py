@@ -15,6 +15,7 @@ class CosiCommit(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         data: bytes = None,
     ) -> None:

@@ -15,6 +15,7 @@ class MoneroTransactionSetInputAck(p.MessageType):
 
     def __init__(
         self,
+        *,
         vini: bytes = None,
         vini_hmac: bytes = None,
         pseudo_out: bytes = None,

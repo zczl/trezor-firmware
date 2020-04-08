@@ -16,6 +16,7 @@ class Failure(p.MessageType):
 
     def __init__(
         self,
+        *,
         code: EnumTypeFailureType = None,
         message: str = None,
     ) -> None:

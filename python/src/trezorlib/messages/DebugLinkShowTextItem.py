@@ -15,6 +15,7 @@ class DebugLinkShowTextItem(p.MessageType):
 
     def __init__(
         self,
+        *,
         style: EnumTypeDebugLinkShowTextStyle = None,
         content: str = None,
     ) -> None:

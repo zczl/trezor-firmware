@@ -14,14 +14,15 @@ class EosAuthorizationKey(p.MessageType):
 
     def __init__(
         self,
+        *,
+        address_n: List[int] = None,
         type: int = None,
         key: bytes = None,
-        address_n: List[int] = None,
         weight: int = None,
     ) -> None:
+        self.address_n = address_n if address_n is not None else []
         self.type = type
         self.key = key
-        self.address_n = address_n if address_n is not None else []
         self.weight = weight
 
     @classmethod

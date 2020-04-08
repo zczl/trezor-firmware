@@ -14,6 +14,7 @@ class EosActionUnknown(p.MessageType):
 
     def __init__(
         self,
+        *,
         data_size: int = None,
         data_chunk: bytes = None,
     ) -> None:

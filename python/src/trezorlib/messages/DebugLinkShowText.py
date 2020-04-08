@@ -17,13 +17,14 @@ class DebugLinkShowText(p.MessageType):
 
     def __init__(
         self,
-        header_text: str = None,
+        *,
         body_text: List[DebugLinkShowTextItem] = None,
+        header_text: str = None,
         header_icon: str = None,
         icon_color: str = None,
     ) -> None:
-        self.header_text = header_text
         self.body_text = body_text if body_text is not None else []
+        self.header_text = header_text
         self.header_icon = header_icon
         self.icon_color = icon_color
 

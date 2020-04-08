@@ -14,6 +14,7 @@ class RipplePayment(p.MessageType):
 
     def __init__(
         self,
+        *,
         amount: int = None,
         destination: str = None,
         destination_tag: int = None,

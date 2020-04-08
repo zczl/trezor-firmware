@@ -17,6 +17,7 @@ class MoneroTransactionAllOutSetAck(p.MessageType):
 
     def __init__(
         self,
+        *,
         extra: bytes = None,
         tx_prefix_hash: bytes = None,
         rv: MoneroRingCtSig = None,

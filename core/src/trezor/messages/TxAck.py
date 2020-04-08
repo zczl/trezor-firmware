@@ -17,6 +17,7 @@ class TxAck(p.MessageType):
 
     def __init__(
         self,
+        *,
         tx: TransactionType = None,
     ) -> None:
         self.tx = tx

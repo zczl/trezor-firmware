@@ -18,6 +18,7 @@ class MoneroTransactionSetOutputRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         dst_entr: MoneroTransactionDestinationEntry = None,
         dst_entr_hmac: bytes = None,
         rsig_data: MoneroTransactionRsigData = None,

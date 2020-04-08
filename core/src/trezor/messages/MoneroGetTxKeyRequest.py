@@ -15,6 +15,7 @@ class MoneroGetTxKeyRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         network_type: int = None,
         salt1: bytes = None,

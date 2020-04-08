@@ -15,6 +15,7 @@ class DebugLinkWatchLayout(p.MessageType):
 
     def __init__(
         self,
+        *,
         watch: bool = None,
     ) -> None:
         self.watch = watch

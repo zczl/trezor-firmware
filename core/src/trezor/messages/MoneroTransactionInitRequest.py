@@ -17,13 +17,14 @@ class MoneroTransactionInitRequest(p.MessageType):
 
     def __init__(
         self,
-        version: int = None,
+        *,
         address_n: List[int] = None,
+        version: int = None,
         network_type: int = None,
         tsx_data: MoneroTransactionData = None,
     ) -> None:
-        self.version = version
         self.address_n = address_n if address_n is not None else []
+        self.version = version
         self.network_type = network_type
         self.tsx_data = tsx_data
 

@@ -14,6 +14,7 @@ class NEMTransactionCommon(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         network: int = None,
         timestamp: int = None,

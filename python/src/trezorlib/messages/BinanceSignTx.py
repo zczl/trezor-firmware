@@ -15,6 +15,7 @@ class BinanceSignTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         msg_count: int = None,
         account_number: int = None,

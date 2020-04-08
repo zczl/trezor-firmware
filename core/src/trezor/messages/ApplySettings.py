@@ -15,6 +15,7 @@ class ApplySettings(p.MessageType):
 
     def __init__(
         self,
+        *,
         language: str = None,
         label: str = None,
         use_passphrase: bool = None,

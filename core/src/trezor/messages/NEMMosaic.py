@@ -14,6 +14,7 @@ class NEMMosaic(p.MessageType):
 
     def __init__(
         self,
+        *,
         namespace: str = None,
         mosaic: str = None,
         quantity: int = None,

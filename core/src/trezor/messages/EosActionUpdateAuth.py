@@ -16,6 +16,7 @@ class EosActionUpdateAuth(p.MessageType):
 
     def __init__(
         self,
+        *,
         account: int = None,
         permission: int = None,
         parent: int = None,

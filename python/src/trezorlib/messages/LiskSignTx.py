@@ -17,6 +17,7 @@ class LiskSignTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         transaction: LiskTransactionCommon = None,
     ) -> None:

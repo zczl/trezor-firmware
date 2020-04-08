@@ -15,6 +15,7 @@ class CipheredKeyValue(p.MessageType):
 
     def __init__(
         self,
+        *,
         value: bytes = None,
     ) -> None:
         self.value = value

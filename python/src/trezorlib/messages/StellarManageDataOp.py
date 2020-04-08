@@ -15,6 +15,7 @@ class StellarManageDataOp(p.MessageType):
 
     def __init__(
         self,
+        *,
         source_account: str = None,
         key: str = None,
         value: bytes = None,

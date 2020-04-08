@@ -16,11 +16,12 @@ class BinanceInputOutput(p.MessageType):
 
     def __init__(
         self,
-        address: str = None,
+        *,
         coins: List[BinanceCoin] = None,
+        address: str = None,
     ) -> None:
-        self.address = address
         self.coins = coins if coins is not None else []
+        self.address = address
 
     @classmethod
     def get_fields(cls) -> Dict:

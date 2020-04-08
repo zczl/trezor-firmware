@@ -14,11 +14,12 @@ class MoneroSubAddressIndicesList(p.MessageType):
 
     def __init__(
         self,
-        account: int = None,
+        *,
         minor_indices: List[int] = None,
+        account: int = None,
     ) -> None:
-        self.account = account
         self.minor_indices = minor_indices if minor_indices is not None else []
+        self.account = account
 
     @classmethod
     def get_fields(cls) -> Dict:

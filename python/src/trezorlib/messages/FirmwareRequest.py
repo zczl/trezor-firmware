@@ -15,6 +15,7 @@ class FirmwareRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         offset: int = None,
         length: int = None,
     ) -> None:

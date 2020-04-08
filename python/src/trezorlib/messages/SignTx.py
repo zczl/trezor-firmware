@@ -15,11 +15,12 @@ class SignTx(p.MessageType):
 
     def __init__(
         self,
-        outputs_count: int = None,
-        inputs_count: int = None,
-        coin_name: str = None,
-        version: int = None,
-        lock_time: int = None,
+        *,
+        outputs_count: int,
+        inputs_count: int,
+        coin_name: str = "Bitcoin",
+        version: int = 1,
+        lock_time: int = 0,
         expiry: int = None,
         version_group_id: int = None,
         timestamp: int = None,
@@ -38,8 +39,8 @@ class SignTx(p.MessageType):
     @classmethod
     def get_fields(cls) -> Dict:
         return {
-            1: ('outputs_count', p.UVarintType, 0),  # required
-            2: ('inputs_count', p.UVarintType, 0),  # required
+            1: ('outputs_count', p.UVarintType, p.FLAG_REQUIRED),
+            2: ('inputs_count', p.UVarintType, p.FLAG_REQUIRED),
             3: ('coin_name', p.UnicodeType, 0),  # default=Bitcoin
             4: ('version', p.UVarintType, 0),  # default=1
             5: ('lock_time', p.UVarintType, 0),  # default=0

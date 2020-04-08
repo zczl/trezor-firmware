@@ -15,6 +15,7 @@ class WebAuthnRemoveResidentCredential(p.MessageType):
 
     def __init__(
         self,
+        *,
         index: int = None,
     ) -> None:
         self.index = index

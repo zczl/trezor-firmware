@@ -14,12 +14,13 @@ class CardanoTxOutputType(p.MessageType):
 
     def __init__(
         self,
-        address: str = None,
+        *,
         address_n: List[int] = None,
+        address: str = None,
         amount: int = None,
     ) -> None:
-        self.address = address
         self.address_n = address_n if address_n is not None else []
+        self.address = address
         self.amount = amount
 
     @classmethod

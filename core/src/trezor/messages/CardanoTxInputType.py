@@ -14,6 +14,7 @@ class CardanoTxInputType(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         prev_hash: bytes = None,
         prev_index: int = None,

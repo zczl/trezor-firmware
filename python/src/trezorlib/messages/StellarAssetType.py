@@ -14,6 +14,7 @@ class StellarAssetType(p.MessageType):
 
     def __init__(
         self,
+        *,
         type: int = None,
         code: str = None,
         issuer: str = None,

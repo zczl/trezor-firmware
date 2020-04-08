@@ -15,6 +15,7 @@ class SignedIdentity(p.MessageType):
 
     def __init__(
         self,
+        *,
         address: str = None,
         public_key: bytes = None,
         signature: bytes = None,

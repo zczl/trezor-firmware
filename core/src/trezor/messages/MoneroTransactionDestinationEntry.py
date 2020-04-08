@@ -16,6 +16,7 @@ class MoneroTransactionDestinationEntry(p.MessageType):
 
     def __init__(
         self,
+        *,
         amount: int = None,
         addr: MoneroAccountPublicAddress = None,
         is_subaddress: bool = None,

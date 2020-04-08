@@ -17,6 +17,7 @@ class RippleSignTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         fee: int = None,
         flags: int = None,

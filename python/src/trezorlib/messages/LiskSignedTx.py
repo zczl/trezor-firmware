@@ -15,6 +15,7 @@ class LiskSignedTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         signature: bytes = None,
     ) -> None:
         self.signature = signature

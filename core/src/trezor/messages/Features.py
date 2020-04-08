@@ -17,6 +17,8 @@ class Features(p.MessageType):
 
     def __init__(
         self,
+        *,
+        capabilities: List[EnumTypeCapability] = None,
         vendor: str = None,
         major_version: int = None,
         minor_version: int = None,
@@ -44,7 +46,6 @@ class Features(p.MessageType):
         unfinished_backup: bool = None,
         no_backup: bool = None,
         recovery_mode: bool = None,
-        capabilities: List[EnumTypeCapability] = None,
         backup_type: EnumTypeBackupType = None,
         sd_card_present: bool = None,
         sd_protection: bool = None,
@@ -52,6 +53,7 @@ class Features(p.MessageType):
         session_id: bytes = None,
         passphrase_always_on_device: bool = None,
     ) -> None:
+        self.capabilities = capabilities if capabilities is not None else []
         self.vendor = vendor
         self.major_version = major_version
         self.minor_version = minor_version
@@ -79,7 +81,6 @@ class Features(p.MessageType):
         self.unfinished_backup = unfinished_backup
         self.no_backup = no_backup
         self.recovery_mode = recovery_mode
-        self.capabilities = capabilities if capabilities is not None else []
         self.backup_type = backup_type
         self.sd_card_present = sd_card_present
         self.sd_protection = sd_protection

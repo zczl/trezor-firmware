@@ -14,12 +14,13 @@ class IdentityType(p.MessageType):
 
     def __init__(
         self,
+        *,
         proto: str = None,
         user: str = None,
         host: str = None,
         port: str = None,
         path: str = None,
-        index: int = None,
+        index: int = 0,
     ) -> None:
         self.proto = proto
         self.user = user

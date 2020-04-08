@@ -16,6 +16,7 @@ class TezosManagerTransfer(p.MessageType):
 
     def __init__(
         self,
+        *,
         destination: TezosContractID = None,
         amount: int = None,
     ) -> None:

@@ -14,6 +14,7 @@ class EosActionBuyRamBytes(p.MessageType):
 
     def __init__(
         self,
+        *,
         payer: int = None,
         receiver: int = None,
         bytes: int = None,

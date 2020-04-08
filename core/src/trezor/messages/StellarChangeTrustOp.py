@@ -17,6 +17,7 @@ class StellarChangeTrustOp(p.MessageType):
 
     def __init__(
         self,
+        *,
         source_account: str = None,
         asset: StellarAssetType = None,
         limit: int = None,

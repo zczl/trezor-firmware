@@ -16,6 +16,7 @@ class ButtonRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         code: EnumTypeButtonRequestType = None,
     ) -> None:
         self.code = code

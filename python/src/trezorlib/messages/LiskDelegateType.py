@@ -14,6 +14,7 @@ class LiskDelegateType(p.MessageType):
 
     def __init__(
         self,
+        *,
         username: str = None,
     ) -> None:
         self.username = username

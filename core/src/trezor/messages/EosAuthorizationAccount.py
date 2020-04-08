@@ -16,6 +16,7 @@ class EosAuthorizationAccount(p.MessageType):
 
     def __init__(
         self,
+        *,
         account: EosPermissionLevel = None,
         weight: int = None,
     ) -> None:

@@ -17,34 +17,35 @@ class MoneroTransactionData(p.MessageType):
 
     def __init__(
         self,
+        *,
+        outputs: List[MoneroTransactionDestinationEntry] = None,
+        minor_indices: List[int] = None,
+        integrated_indices: List[int] = None,
         version: int = None,
         payment_id: bytes = None,
         unlock_time: int = None,
-        outputs: List[MoneroTransactionDestinationEntry] = None,
         change_dts: MoneroTransactionDestinationEntry = None,
         num_inputs: int = None,
         mixin: int = None,
         fee: int = None,
         account: int = None,
-        minor_indices: List[int] = None,
         rsig_data: MoneroTransactionRsigData = None,
-        integrated_indices: List[int] = None,
         client_version: int = None,
         hard_fork: int = None,
         monero_version: bytes = None,
     ) -> None:
+        self.outputs = outputs if outputs is not None else []
+        self.minor_indices = minor_indices if minor_indices is not None else []
+        self.integrated_indices = integrated_indices if integrated_indices is not None else []
         self.version = version
         self.payment_id = payment_id
         self.unlock_time = unlock_time
-        self.outputs = outputs if outputs is not None else []
         self.change_dts = change_dts
         self.num_inputs = num_inputs
         self.mixin = mixin
         self.fee = fee
         self.account = account
-        self.minor_indices = minor_indices if minor_indices is not None else []
         self.rsig_data = rsig_data
-        self.integrated_indices = integrated_indices if integrated_indices is not None else []
         self.client_version = client_version
         self.hard_fork = hard_fork
         self.monero_version = monero_version

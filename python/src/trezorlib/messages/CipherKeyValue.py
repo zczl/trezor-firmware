@@ -15,6 +15,7 @@ class CipherKeyValue(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         key: str = None,
         value: bytes = None,

@@ -17,10 +17,11 @@ class MoneroTransactionSourceEntry(p.MessageType):
 
     def __init__(
         self,
+        *,
         outputs: List[MoneroOutputEntry] = None,
+        real_out_additional_tx_keys: List[bytes] = None,
         real_output: int = None,
         real_out_tx_key: bytes = None,
-        real_out_additional_tx_keys: List[bytes] = None,
         real_output_in_tx_index: int = None,
         amount: int = None,
         rct: bool = None,
@@ -29,9 +30,9 @@ class MoneroTransactionSourceEntry(p.MessageType):
         subaddr_minor: int = None,
     ) -> None:
         self.outputs = outputs if outputs is not None else []
+        self.real_out_additional_tx_keys = real_out_additional_tx_keys if real_out_additional_tx_keys is not None else []
         self.real_output = real_output
         self.real_out_tx_key = real_out_tx_key
-        self.real_out_additional_tx_keys = real_out_additional_tx_keys if real_out_additional_tx_keys is not None else []
         self.real_output_in_tx_index = real_output_in_tx_index
         self.amount = amount
         self.rct = rct

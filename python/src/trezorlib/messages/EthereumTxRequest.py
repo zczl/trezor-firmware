@@ -15,6 +15,7 @@ class EthereumTxRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         data_length: int = None,
         signature_v: int = None,
         signature_r: bytes = None,

@@ -23,6 +23,7 @@ class NEMSignTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         transaction: NEMTransactionCommon = None,
         multisig: NEMTransactionCommon = None,
         transfer: NEMTransfer = None,

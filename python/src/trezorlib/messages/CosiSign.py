@@ -15,6 +15,7 @@ class CosiSign(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         data: bytes = None,
         global_commitment: bytes = None,

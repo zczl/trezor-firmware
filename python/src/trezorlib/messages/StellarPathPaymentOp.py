@@ -17,21 +17,22 @@ class StellarPathPaymentOp(p.MessageType):
 
     def __init__(
         self,
+        *,
+        paths: List[StellarAssetType] = None,
         source_account: str = None,
         send_asset: StellarAssetType = None,
         send_max: int = None,
         destination_account: str = None,
         destination_asset: StellarAssetType = None,
         destination_amount: int = None,
-        paths: List[StellarAssetType] = None,
     ) -> None:
+        self.paths = paths if paths is not None else []
         self.source_account = source_account
         self.send_asset = send_asset
         self.send_max = send_max
         self.destination_account = destination_account
         self.destination_asset = destination_asset
         self.destination_amount = destination_amount
-        self.paths = paths if paths is not None else []
 
     @classmethod
     def get_fields(cls) -> Dict:

@@ -15,6 +15,7 @@ class EthereumSignTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         nonce: bytes = None,
         gas_price: bytes = None,

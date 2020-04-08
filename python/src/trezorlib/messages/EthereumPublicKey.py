@@ -17,6 +17,7 @@ class EthereumPublicKey(p.MessageType):
 
     def __init__(
         self,
+        *,
         node: HDNodeType = None,
         xpub: str = None,
     ) -> None:

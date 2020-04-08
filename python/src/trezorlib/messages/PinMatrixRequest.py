@@ -16,6 +16,7 @@ class PinMatrixRequest(p.MessageType):
 
     def __init__(
         self,
+        *,
         type: EnumTypePinMatrixRequestType = None,
     ) -> None:
         self.type = type

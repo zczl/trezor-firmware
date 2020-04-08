@@ -14,6 +14,7 @@ class TxRequestSerializedType(p.MessageType):
 
     def __init__(
         self,
+        *,
         signature_index: int = None,
         signature: bytes = None,
         serialized_tx: bytes = None,

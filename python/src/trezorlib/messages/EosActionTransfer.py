@@ -16,6 +16,7 @@ class EosActionTransfer(p.MessageType):
 
     def __init__(
         self,
+        *,
         sender: int = None,
         receiver: int = None,
         quantity: EosAsset = None,

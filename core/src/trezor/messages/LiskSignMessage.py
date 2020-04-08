@@ -15,6 +15,7 @@ class LiskSignMessage(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         message: bytes = None,
     ) -> None:

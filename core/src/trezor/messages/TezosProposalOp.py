@@ -14,13 +14,14 @@ class TezosProposalOp(p.MessageType):
 
     def __init__(
         self,
+        *,
+        proposals: List[bytes] = None,
         source: bytes = None,
         period: int = None,
-        proposals: List[bytes] = None,
     ) -> None:
+        self.proposals = proposals if proposals is not None else []
         self.source = source
         self.period = period
-        self.proposals = proposals if proposals is not None else []
 
     @classmethod
     def get_fields(cls) -> Dict:

@@ -17,6 +17,7 @@ class LiskTransactionCommon(p.MessageType):
 
     def __init__(
         self,
+        *,
         type: EnumTypeLiskTransactionType = None,
         amount: int = None,
         fee: int = None,

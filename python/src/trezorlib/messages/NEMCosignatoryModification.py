@@ -15,6 +15,7 @@ class NEMCosignatoryModification(p.MessageType):
 
     def __init__(
         self,
+        *,
         type: EnumTypeNEMModificationType = None,
         public_key: bytes = None,
     ) -> None:

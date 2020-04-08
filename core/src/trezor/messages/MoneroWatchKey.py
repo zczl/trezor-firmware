@@ -15,6 +15,7 @@ class MoneroWatchKey(p.MessageType):
 
     def __init__(
         self,
+        *,
         watch_key: bytes = None,
         address: bytes = None,
     ) -> None:

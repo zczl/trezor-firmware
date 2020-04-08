@@ -15,6 +15,7 @@ class ECDHSessionKey(p.MessageType):
 
     def __init__(
         self,
+        *,
         session_key: bytes = None,
     ) -> None:
         self.session_key = session_key

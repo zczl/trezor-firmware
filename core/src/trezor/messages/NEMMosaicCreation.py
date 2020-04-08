@@ -16,6 +16,7 @@ class NEMMosaicCreation(p.MessageType):
 
     def __init__(
         self,
+        *,
         definition: NEMMosaicDefinition = None,
         sink: str = None,
         fee: int = None,

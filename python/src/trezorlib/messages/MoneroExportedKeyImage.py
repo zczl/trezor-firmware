@@ -14,6 +14,7 @@ class MoneroExportedKeyImage(p.MessageType):
 
     def __init__(
         self,
+        *,
         iv: bytes = None,
         blob: bytes = None,
     ) -> None:

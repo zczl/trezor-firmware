@@ -15,6 +15,7 @@ class DebugLinkLog(p.MessageType):
 
     def __init__(
         self,
+        *,
         level: int = None,
         bucket: str = None,
         text: str = None,

@@ -15,10 +15,11 @@ class VerifyMessage(p.MessageType):
 
     def __init__(
         self,
+        *,
         address: str = None,
         signature: bytes = None,
         message: bytes = None,
-        coin_name: str = None,
+        coin_name: str = "Bitcoin",
     ) -> None:
         self.address = address
         self.signature = signature

@@ -18,6 +18,7 @@ class CardanoSignTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         inputs: List[CardanoTxInputType] = None,
         outputs: List[CardanoTxOutputType] = None,
         transactions_count: int = None,

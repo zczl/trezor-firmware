@@ -15,6 +15,7 @@ class NEMImportanceTransfer(p.MessageType):
 
     def __init__(
         self,
+        *,
         mode: EnumTypeNEMImportanceTransferMode = None,
         public_key: bytes = None,
     ) -> None:

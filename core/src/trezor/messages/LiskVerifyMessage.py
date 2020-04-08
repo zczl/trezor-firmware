@@ -15,6 +15,7 @@ class LiskVerifyMessage(p.MessageType):
 
     def __init__(
         self,
+        *,
         public_key: bytes = None,
         signature: bytes = None,
         message: bytes = None,

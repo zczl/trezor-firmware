@@ -15,6 +15,7 @@ class BinanceSignedTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         signature: bytes = None,
         public_key: bytes = None,
     ) -> None:

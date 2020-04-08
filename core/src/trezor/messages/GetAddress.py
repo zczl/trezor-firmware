@@ -18,11 +18,12 @@ class GetAddress(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
-        coin_name: str = None,
+        coin_name: str = "Bitcoin",
         show_display: bool = None,
         multisig: MultisigRedeemScriptType = None,
-        script_type: EnumTypeInputScriptType = None,
+        script_type: EnumTypeInputScriptType = 0,
     ) -> None:
         self.address_n = address_n if address_n is not None else []
         self.coin_name = coin_name

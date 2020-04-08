@@ -15,6 +15,7 @@ class StellarAllowTrustOp(p.MessageType):
 
     def __init__(
         self,
+        *,
         source_account: str = None,
         trusted_account: str = None,
         asset_type: int = None,

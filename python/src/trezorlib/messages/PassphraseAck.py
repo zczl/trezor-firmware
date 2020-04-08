@@ -15,6 +15,7 @@ class PassphraseAck(p.MessageType):
 
     def __init__(
         self,
+        *,
         passphrase: str = None,
         _state: bytes = None,
         on_device: bool = None,

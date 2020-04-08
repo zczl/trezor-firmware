@@ -14,6 +14,7 @@ class EosActionRefund(p.MessageType):
 
     def __init__(
         self,
+        *,
         owner: int = None,
     ) -> None:
         self.owner = owner

@@ -14,6 +14,7 @@ class WebAuthnCredential(p.MessageType):
 
     def __init__(
         self,
+        *,
         index: int = None,
         id: bytes = None,
         rp_id: str = None,

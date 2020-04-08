@@ -17,6 +17,8 @@ class DebugLinkState(p.MessageType):
 
     def __init__(
         self,
+        *,
+        layout_lines: List[str] = None,
         layout: bytes = None,
         pin: str = None,
         matrix: str = None,
@@ -29,8 +31,8 @@ class DebugLinkState(p.MessageType):
         recovery_word_pos: int = None,
         reset_word_pos: int = None,
         mnemonic_type: int = None,
-        layout_lines: List[str] = None,
     ) -> None:
+        self.layout_lines = layout_lines if layout_lines is not None else []
         self.layout = layout
         self.pin = pin
         self.matrix = matrix
@@ -43,7 +45,6 @@ class DebugLinkState(p.MessageType):
         self.recovery_word_pos = recovery_word_pos
         self.reset_word_pos = reset_word_pos
         self.mnemonic_type = mnemonic_type
-        self.layout_lines = layout_lines if layout_lines is not None else []
 
     @classmethod
     def get_fields(cls) -> Dict:

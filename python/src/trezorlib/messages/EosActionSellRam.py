@@ -14,6 +14,7 @@ class EosActionSellRam(p.MessageType):
 
     def __init__(
         self,
+        *,
         account: int = None,
         bytes: int = None,
     ) -> None:

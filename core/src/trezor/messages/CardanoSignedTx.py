@@ -15,6 +15,7 @@ class CardanoSignedTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         tx_hash: bytes = None,
         tx_body: bytes = None,
     ) -> None:

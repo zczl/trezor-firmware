@@ -22,6 +22,7 @@ class TezosSignTx(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         branch: bytes = None,
         reveal: TezosRevealOp = None,

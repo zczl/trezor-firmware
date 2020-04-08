@@ -15,6 +15,7 @@ class CardanoTxAck(p.MessageType):
 
     def __init__(
         self,
+        *,
         transaction: bytes = None,
     ) -> None:
         self.transaction = transaction

@@ -14,6 +14,7 @@ class MoneroMultisigKLRki(p.MessageType):
 
     def __init__(
         self,
+        *,
         K: bytes = None,
         L: bytes = None,
         R: bytes = None,

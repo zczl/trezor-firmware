@@ -15,6 +15,7 @@ class ApplyFlags(p.MessageType):
 
     def __init__(
         self,
+        *,
         flags: int = None,
     ) -> None:
         self.flags = flags

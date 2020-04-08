@@ -14,6 +14,7 @@ class EosActionDeleteAuth(p.MessageType):
 
     def __init__(
         self,
+        *,
         account: int = None,
         permission: int = None,
     ) -> None:

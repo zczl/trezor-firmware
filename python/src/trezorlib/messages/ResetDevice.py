@@ -16,16 +16,17 @@ class ResetDevice(p.MessageType):
 
     def __init__(
         self,
+        *,
         display_random: bool = None,
-        strength: int = None,
+        strength: int = 256,
         passphrase_protection: bool = None,
         pin_protection: bool = None,
-        language: str = None,
+        language: str = "en-US",
         label: str = None,
         u2f_counter: int = None,
         skip_backup: bool = None,
         no_backup: bool = None,
-        backup_type: EnumTypeBackupType = None,
+        backup_type: EnumTypeBackupType = 0,
     ) -> None:
         self.display_random = display_random
         self.strength = strength

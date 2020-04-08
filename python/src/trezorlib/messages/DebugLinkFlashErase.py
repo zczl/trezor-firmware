@@ -15,6 +15,7 @@ class DebugLinkFlashErase(p.MessageType):
 
     def __init__(
         self,
+        *,
         sector: int = None,
     ) -> None:
         self.sector = sector

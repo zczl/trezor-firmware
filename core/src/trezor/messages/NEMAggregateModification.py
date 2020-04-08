@@ -16,6 +16,7 @@ class NEMAggregateModification(p.MessageType):
 
     def __init__(
         self,
+        *,
         modifications: List[NEMCosignatoryModification] = None,
         relative_change: int = None,
     ) -> None:

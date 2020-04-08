@@ -31,6 +31,7 @@ class EosTxActionAck(p.MessageType):
 
     def __init__(
         self,
+        *,
         common: EosActionCommon = None,
         transfer: EosActionTransfer = None,
         delegate: EosActionDelegate = None,

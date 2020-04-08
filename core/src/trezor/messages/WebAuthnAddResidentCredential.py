@@ -15,6 +15,7 @@ class WebAuthnAddResidentCredential(p.MessageType):
 
     def __init__(
         self,
+        *,
         credential_id: bytes = None,
     ) -> None:
         self.credential_id = credential_id

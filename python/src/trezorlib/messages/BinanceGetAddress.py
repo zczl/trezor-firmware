@@ -15,6 +15,7 @@ class BinanceGetAddress(p.MessageType):
 
     def __init__(
         self,
+        *,
         address_n: List[int] = None,
         show_display: bool = None,
     ) -> None:

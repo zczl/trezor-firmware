@@ -18,6 +18,7 @@ class BinanceOrderMsg(p.MessageType):
 
     def __init__(
         self,
+        *,
         id: str = None,
         ordertype: EnumTypeBinanceOrderType = None,
         price: int = None,

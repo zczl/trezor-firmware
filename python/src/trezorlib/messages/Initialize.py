@@ -15,6 +15,7 @@ class Initialize(p.MessageType):
 
     def __init__(
         self,
+        *,
         session_id: bytes = None,
     ) -> None:
         self.session_id = session_id

@@ -16,6 +16,7 @@ class EosActionNewAccount(p.MessageType):
 
     def __init__(
         self,
+        *,
         creator: int = None,
         name: int = None,
         owner: EosAuthorization = None,

@@ -16,6 +16,7 @@ class MoneroOutputEntry(p.MessageType):
 
     def __init__(
         self,
+        *,
         idx: int = None,
         key: MoneroRctKeyPublic = None,
     ) -> None:

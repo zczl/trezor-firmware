@@ -15,6 +15,7 @@ class CosiCommitment(p.MessageType):
 
     def __init__(
         self,
+        *,
         commitment: bytes = None,
         pubkey: bytes = None,
     ) -> None:
