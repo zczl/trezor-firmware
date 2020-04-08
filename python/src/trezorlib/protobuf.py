@@ -277,6 +277,7 @@ class CountingWriter:
 
 
 FLAG_REPEATED = 1
+FLAG_REQUIRED = 2
 
 
 def decode_packed_array_field(ftype: FieldType, reader: Reader) -> List[Any]:
@@ -325,7 +326,11 @@ def decode_length_delimited_field(
 
 def load_message(reader: Reader, msg_type: Type[MT]) -> MT:
     fields = msg_type.get_fields()
-    msg = msg_type()
+
+    # pre-seed the dict with lists for repeated fields
+    msg_dict = {
+        fname: [] for fname, _, fflags in fields.values() if fflags & FLAG_REPEATED
+    }
 
     while True:
         try:
@@ -367,17 +372,16 @@ def load_message(reader: Reader, msg_type: Type[MT]) -> MT:
             raise TypeError  # unknown wire type
 
         if fflags & FLAG_REPEATED:
-            pvalue = getattr(msg, fname)
-            pvalue.extend(fvalues)
-            fvalue = pvalue
+            msg_dict[fname].extend(fvalues)
         elif len(fvalues) != 1:
             raise ValueError("Unexpected multiple values in non-repeating field")
         else:
-            fvalue = fvalues[0]
+            msg_dict[fname] = fvalues[0]
 
-        setattr(msg, fname, fvalue)
-
-    return msg
+    for fname, _, fflags in fields.values():
+        if fflags & FLAG_REQUIRED and fname not in msg_dict:
+            raise ValueError  # required field was not received
+    return msg_type(**msg_dict)
 
 
 def dump_message(writer: Writer, msg: MessageType) -> None:

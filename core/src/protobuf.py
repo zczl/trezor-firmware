@@ -179,6 +179,7 @@ class LimitedReader:
 
 
 FLAG_REPEATED = const(1)
+FLAG_REQUIRED = const(2)
 
 if False:
     LoadedMessageType = TypeVar("LoadedMessageType", bound=MessageType)
@@ -188,12 +189,16 @@ async def load_message(
     reader: AsyncReader, msg_type: Type[LoadedMessageType]
 ) -> LoadedMessageType:
     fields = msg_type.get_fields()
-    msg = msg_type()
 
     if False:
         SingularValue = Union[int, bool, bytearray, str, MessageType]
         Value = Union[SingularValue, List[SingularValue]]
         fvalue = 0  # type: Value
+
+    # pre-seed the dict with lists for repeated fields
+    msg_dict = {
+        fname: [] for fname, _, fflags in fields.values() if fflags & FLAG_REPEATED
+    }  # type: Dict[str, Value]
 
     while True:
         try:
@@ -243,18 +248,14 @@ async def load_message(
             raise TypeError  # field type is unknown
 
         if fflags & FLAG_REPEATED:
-            pvalue = getattr(msg, fname, [])
-            pvalue.append(fvalue)
-            fvalue = pvalue
-        setattr(msg, fname, fvalue)
+            msg_dict[fname].append(fvalue)  # type: ignore
+        else:
+            msg_dict[fname] = fvalue
 
-    # fill missing fields
-    for tag in fields:
-        field = fields[tag]
-        if not hasattr(msg, field[0]):
-            setattr(msg, field[0], None)
-
-    return msg
+    for fname, _, fflags in fields.values():
+        if fflags & FLAG_REQUIRED and fname not in msg_dict:
+            raise ValueError  # required field was not received
+    return msg_type(**msg_dict)
 
 
 async def dump_message(

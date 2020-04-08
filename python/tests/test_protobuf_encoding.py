@@ -57,6 +57,15 @@ class RepeatedFields(protobuf.MessageType):
         }
 
 
+class RequiredFields(protobuf.MessageType):
+    @classmethod
+    def get_fields(cls):
+        return {
+            1: ("uvarint", protobuf.UVarintType, protobuf.FLAG_REQUIRED),
+            2: ("nested", PrimitiveMessage, protobuf.FLAG_REQUIRED),
+        }
+
+
 def load_uvarint(buffer):
     reader = BytesIO(buffer)
     return protobuf.load_uvarint(reader)
@@ -109,7 +118,7 @@ def test_sint_uint():
 
     # roundtrip:
     assert protobuf.uint_to_sint(protobuf.sint_to_uint(1234567891011)) == 1234567891011
-    assert protobuf.uint_to_sint(protobuf.sint_to_uint(-2 ** 32)) == -2 ** 32
+    assert protobuf.uint_to_sint(protobuf.sint_to_uint(-(2 ** 32))) == -(2 ** 32)
 
 
 def test_simple_message():
@@ -223,3 +232,38 @@ def test_packed_enum():
     assert msg.enumlist == values
     assert not msg.uintlist
     assert not msg.strlist
+
+
+def test_required():
+    msg = RequiredFields(uvarint=3, nested=PrimitiveMessage())
+    buf = BytesIO()
+    protobuf.dump_message(buf, msg)
+    buf.seek(0)
+    msg_ok = protobuf.load_message(buf, RequiredFields)
+
+    assert msg_ok == msg
+
+    msg = RequiredFields(uvarint=3)
+    buf = BytesIO()
+    # we can always encode an invalid message
+    protobuf.dump_message(buf, msg)
+    buf.seek(0)
+    with pytest.raises(ValueError):
+        # required field `nested` is not sent
+        protobuf.load_message(buf, RequiredFields)
+
+    msg = RequiredFields(uvarint=3, nested=None,)
+    buf = BytesIO()
+    protobuf.dump_message(buf, msg)
+    buf.seek(0)
+    with pytest.raises(ValueError):
+        # required field `nested` is also not sent
+        protobuf.load_message(buf, RequiredFields)
+
+    msg = RequiredFields(nested=PrimitiveMessage())
+    buf = BytesIO()
+    protobuf.dump_message(buf, msg)
+    buf.seek(0)
+    with pytest.raises(ValueError):
+        # required field `uvarint` is not sent
+        protobuf.load_message(buf, RequiredFields)
