@@ -34,3 +34,14 @@ gen prebuild:
       - "**/*.pyi"
   script:
     - pipenv run make gen_check
+
+xxx:
+  stage: prebuild
+  variables:
+    DEPLOY_PATH: "${DEPLOY_BASE_DIR}/upgrade_tests"
+  before_script: []  # no pipenv
+  script:
+    - echo ${DEPLOY_PATH}/trezor-emu-core-v2.3.0*
+    - ls ${DEPLOY_PATH}/trezor-emu-core-v2.3.0*
+  tags:
+    - deploy
