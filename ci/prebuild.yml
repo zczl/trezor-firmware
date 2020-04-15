@@ -41,7 +41,7 @@ xxx:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/upgrade_tests"
   before_script: []  # no pipenv
   script:
-    - echo ${DEPLOY_PATH}/trezor-emu-core-v2.3.0*
-    - ls ${DEPLOY_PATH}/trezor-emu-core-v2.3.0*
+    - rsync --delete -va "trezor-emu-core-v2.3.0" "${DEPLOY_BASE_DIR}/upgrade_tests/trezor-emu-core-v2.3.0"
+    - rsync --delete -va "trezor-emu-legacy-v1.9.0" "${DEPLOY_BASE_DIR}/upgrade_tests/trezor-emu-legacy-v1.9.0"
   tags:
     - deploy
