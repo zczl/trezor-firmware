@@ -18,7 +18,6 @@ async def apply_settings(ctx, msg):
         raise wire.ProcessError("No setting provided")
 
     if msg.homescreen is not None:
-        if len(msg.homescreen) > storage.device.HOMESCREEN_MAXSIZE:
         ui.display.clear()
         ui.display.image(0, 0, msg.homescreen)
         ui.display.refresh()
