@@ -128,7 +128,7 @@ _CTAP_HID_TIMEOUT_MS = const(
 _U2F_CONFIRM_TIMEOUT_MS = const(
     3 * 1000
 )  # maximum U2F pollling interval, Chrome uses 200 ms
-_FIDO2_CONFIRM_TIMEOUT_MS = const(60 * 1000)
+_FIDO2_CONFIRM_TIMEOUT_MS = const(10 * 1000)
 _POPUP_TIMEOUT_MS = const(4 * 1000)
 
 # hid error codes
