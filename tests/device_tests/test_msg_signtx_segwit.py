@@ -25,6 +25,7 @@ from .signtx import request_finished, request_input, request_meta, request_outpu
 
 B = proto.ButtonRequestType
 TX_API = TxCache("Testnet")
+TX_API_MAINNET = TxCache("Bitcoin")
 
 TXHASH_20912f = bytes.fromhex(
     "20912f98ea3ed849042efed0fdac8cb4fc301961c5988cba56902d8ffb61c337"
@@ -37,6 +38,9 @@ TXHASH_dee13c = bytes.fromhex(
 )
 TXHASH_e5040e = bytes.fromhex(
     "e5040e1bc1ae7667ffb9e5248e90b2fb93cd9150234151ce90e14ab2f5933bcd"
+)
+TXHASH_4a7b7e = bytes.fromhex(
+    "4a7b7e0403ae5607e473949cfa03f09f2cd8b0f404bf99ce10b7303d86280bf7"
 )
 
 
@@ -418,3 +422,29 @@ class TestMsgSigntxSegwit:
             )
 
         assert e.value.failure.message.endswith("Invalid amount specified")
+
+    @pytest.mark.skip_ui
+    @pytest.mark.slow
+    def test_lots_of_segwit_inputs(self, client):
+        # Tests if device implements serialization of len(inputs) correctly
+        # tx 4a7b7e0403ae5607e473949cfa03f09f2cd8b0f404bf99ce10b7303d86280bf7 : 100 UTXO for spending for unit tests
+        inputs = []
+        for i in range(100):
+            inputs.append(
+                proto.TxInputType(
+                    address_n=parse_path(f"49h/0h/0h/0/{i}"),
+                    prev_hash=TXHASH_4a7b7e,
+                    prev_index=i,
+                    amount=26000,
+                    script_type=proto.InputScriptType.SPENDP2SHWITNESS,
+                )
+            )
+        out = proto.TxOutputType(
+            address="19dvDdyxxptP9dGvozYe8BP6tgFV9L4jg5",
+            amount=100 * 26000 - 15 * 10000,
+            script_type=proto.OutputScriptType.PAYTOADDRESS,
+        )
+        _, serialized_tx = btc.sign_tx(
+            client, "Bitcoin", inputs, [out], prev_txes=TX_API_MAINNET
+        )
+        assert False
