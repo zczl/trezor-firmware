@@ -1066,14 +1066,13 @@ class TestMsgSigntx:
             script_type=proto.OutputScriptType.PAYTOADDRESS,
         )
 
-        details = proto.SignTx()
-        setattr(details, field, value)
+        kwargs = {field: value}
         name = field.replace("_", " ")
         with pytest.raises(
             TrezorFailure, match=r"(?i){} not enabled on this coin".format(name)
         ):
             btc.sign_tx(
-                client, "Bitcoin", [inp0], [out1], details, prev_txes=TX_CACHE_MAINNET
+                client, "Bitcoin", [inp0], [out1], prev_txes=TX_CACHE_MAINNET, **kwargs
             )
 
     @pytest.mark.parametrize(

@@ -15,9 +15,13 @@
 # If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 
 from decimal import Decimal
+from typing import TYPE_CHECKING, Any, Dict, Sequence, Tuple
 
 from . import exceptions, messages
 from .tools import expect, normalize_nfc, session
+
+if TYPE_CHECKING:
+    from .client import TrezorClient
 
 
 def from_json(json_dict):
@@ -120,17 +124,33 @@ def verify_message(client, coin_name, address, signature, message):
 
 
 @session
-def sign_tx(client, coin_name, inputs, outputs, details=None, prev_txes=None):
+def sign_tx(
+    client: "TrezorClient",
+    coin_name: str,
+    inputs: Sequence[messages.TxInputType],
+    outputs: Sequence[messages.TxOutputType],
+    prev_txes: Dict[bytes, messages.TransactionType],
+    **kwargs: Any,
+) -> Tuple[Sequence[bytes], bytes]:
+    """Sign a Bitcoin-like transaction.
+
+    Returns a list of signatures (one for each provided input) and the
+    network-serialized transaction.
+
+    In addition to the required arguments, it is possible to specify additional
+    transaction properties (version, lock time, expiry...). Each additional argument
+    must correspond to a field in the `SignTx` data type. Note that some fields
+    (`inputs_count`, `outputs_count`, `coin_name`) will be inferred from the arguments
+    and cannot be overriden by kwargs.
+    """
     this_tx = messages.TransactionType(inputs=inputs, outputs=outputs)
 
-    if details is None:
-        signtx = messages.SignTx()
-    else:
-        signtx = details
-
-    signtx.coin_name = coin_name
-    signtx.inputs_count = len(inputs)
-    signtx.outputs_count = len(outputs)
+    signtx = messages.SignTx(
+        coin_name=coin_name, inputs_count=len(inputs), outputs_count=len(outputs),
+    )
+    for name, value in kwargs.items():
+        if hasattr(signtx, name):
+            setattr(signtx, name, value)
 
     res = client.call(signtx)
 
@@ -138,7 +158,7 @@ def sign_tx(client, coin_name, inputs, outputs, details=None, prev_txes=None):
     signatures = [None] * len(inputs)
     serialized_tx = b""
 
-    def copy_tx_meta(tx):
+    def copy_tx_meta(tx: messages.TransactionType) -> messages.TransactionType:
         tx_copy = messages.TransactionType(**tx)
         # clear fields
         tx_copy.inputs_cnt = len(tx.inputs)
