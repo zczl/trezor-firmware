@@ -10,16 +10,16 @@ from apps.common.writers import write_bitcoin_varint
 
 if False:
     from typing import List
-    from apps.common.coininfo import CoinType
+    from apps.common.coininfo import CoinInfo
 
 
-def message_digest(coin: CoinType, message: bytes) -> bytes:
+def message_digest(coin: CoinInfo, message: bytes) -> bytes:
     if not utils.BITCOIN_ONLY and coin.decred:
         h = utils.HashWriter(blake256())
     else:
         h = utils.HashWriter(sha256())
     write_bitcoin_varint(h, len(coin.signed_message_header))
-    h.extend(coin.signed_message_header)
+    h.extend(coin.signed_message_header.encode())
     write_bitcoin_varint(h, len(message))
     h.extend(message)
     ret = h.get_digest()
@@ -41,9 +41,9 @@ def split_message(message: bytes) -> List[str]:
 async def require_confirm_sign_message(
     ctx: wire.Context, header: str, message: bytes
 ) -> None:
-    message = split_message(message)
+    message_lines = split_message(message)
     text = Text(header, new_lines=False)
-    text.normal(*message)
+    text.normal(*message_lines)
     await require_confirm(ctx, text)
 
 

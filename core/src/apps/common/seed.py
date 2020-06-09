@@ -8,6 +8,7 @@ from apps.common.passphrase import get as get_passphrase
 
 if False:
     from typing import (
+        overload,
         Any,
         Awaitable,
         Callable,
@@ -36,6 +37,11 @@ if False:
 
         def clone(self: T) -> T:
             ...
+
+
+else:
+    # do-nothing decorator to supplement typing.overload
+    overload = lambda x: None  # noqa: E731
 
 
 class Slip21Node:
@@ -91,7 +97,15 @@ class Keychain:
         else:
             return bip32.from_seed(self.seed, curve)
 
-    def derive(self, path: PathType) -> NodeType:
+    @overload  # noqa: F811
+    def derive(self, path: Bip32Path) -> bip32.HDNode:
+        ...
+
+    @overload  # noqa: F811
+    def derive(self, path: Slip21Path) -> Slip21Node:
+        ...
+
+    def derive(self, path: PathType) -> NodeType:  # noqa: F811
         root_index, suffix = self.match_path(path)
 
         if root_index not in self.roots:

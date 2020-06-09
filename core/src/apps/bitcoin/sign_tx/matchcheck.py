@@ -8,13 +8,19 @@ from trezor.utils import ensure
 from .. import multisig
 
 if False:
-    from typing import Any, Union
+    from typing import Any, Union, Generic, TypeVar
+
+    T = TypeVar("T")
+else:
+    # mypy cheat: Generic[T] will be `object` which is a valid parent type
+    Generic = [object]  # type: ignore
+    T = 0  # type: ignore
 
 # the number of bip32 levels used in a wallet (chain and address)
 _BIP32_WALLET_DEPTH = const(2)
 
 
-class MatchChecker:
+class MatchChecker(Generic[T]):
     """
     MatchCheckers are used to identify the change-output in a transaction. An output is
     a change-output if it has a certain matching attribute with all inputs.
@@ -40,10 +46,10 @@ class MatchChecker:
     UNDEFINED = object()
 
     def __init__(self) -> None:
-        self.attribute = self.UNDEFINED  # type: Any
+        self.attribute = self.UNDEFINED  # type: Union[object, T]
         self.read_only = False  # Failsafe to ensure that add_input() is not accidentally called after output_matches().
 
-    def attribute_from_tx(self, txio: Union[TxInputType, TxOutputType]) -> Any:
+    def attribute_from_tx(self, txio: Union[TxInputType, TxOutputType]) -> T:
         # Return the attribute from the txio, which is to be used for matching.
         # If the txio is invalid for matching, then return an object which
         # evaluates as a boolean False.

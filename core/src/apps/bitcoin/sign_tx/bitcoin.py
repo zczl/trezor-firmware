@@ -281,9 +281,10 @@ class Bitcoin:
 
                 # For the signing process the previous UTXO's scriptPubKey is included in h_sign.
                 if txi.script_type == InputScriptType.SPENDMULTISIG:
+                    assert txi.multisig is not None  # XXX not checked anywhere
                     script_pubkey = scripts.output_script_multisig(
                         multisig.multisig_get_pubkeys(txi.multisig), txi.multisig.m,
-                    )
+                    )  # type: bytes
                 elif txi.script_type == InputScriptType.SPENDADDRESS:
                     script_pubkey = scripts.output_script_p2pkh(
                         addresses.ecdsa_hash_pubkey(key_sign_pub, self.coin)
@@ -333,6 +334,8 @@ class Bitcoin:
 
         # STAGE_REQUEST_2_PREV_META in legacy
         tx = await helpers.request_tx_meta(self.tx_req, self.coin, prev_hash)
+        assert tx.inputs_cnt is not None  # ensured in sanitize_tx_meta
+        assert tx.outputs_cnt is not None  # ensured in sanitize_tx_meta
 
         if tx.outputs_cnt <= prev_index:
             raise wire.ProcessError("Not enough outputs in previous transaction.")
@@ -346,6 +349,7 @@ class Bitcoin:
         for i in range(tx.inputs_cnt):
             # STAGE_REQUEST_2_PREV_INPUT in legacy
             txi = await helpers.request_tx_input(self.tx_req, i, self.coin, prev_hash)
+            assert txi.script_sig is not None  # checked in sanitize_tx_input
             self.write_tx_input(txh, txi, txi.script_sig)
 
         write_bitcoin_varint(txh, tx.outputs_cnt)
@@ -416,6 +420,7 @@ class Bitcoin:
 
     def set_serialized_signature(self, index: int, signature: bytes) -> None:
         # Only one signature per TxRequest can be serialized.
+        assert self.tx_req.serialized is not None
         ensure(self.tx_req.serialized.signature is None)
 
         self.tx_req.serialized.signature_index = index
@@ -477,10 +482,11 @@ class Bitcoin:
         writers.write_uint32(self.h_prevouts, txi.prev_index)
         writers.write_uint32(self.h_sequence, txi.sequence)
 
-    def hash143_add_output(self, txo: TxOutputType, script_pubkey) -> None:
+    def hash143_add_output(self, txo: TxOutputType, script_pubkey: bytes) -> None:
         writers.write_tx_output(self.h_outputs, txo, script_pubkey)
 
     def hash143_preimage_hash(self, txi: TxInputType, pubkeyhash: bytes) -> bytes:
+        assert txi.amount is not None  # checked in caller
         h_preimage = HashWriter(sha256())
 
         # nVersion

@@ -29,7 +29,7 @@ from .bitcoinlike import Bitcoinlike
 
 if False:
     from typing import Union
-    from .writers import Writer
+    from ..writers import Writer
 
 OVERWINTERED = const(0x80000000)
 
@@ -51,6 +51,8 @@ class Overwintered(Bitcoinlike):
     async def step7_finish(self) -> None:
         self.write_tx_footer(self.serialized_tx, self.tx)
 
+        assert self.tx.expiry is not None  # checked in sanitize_*
+
         if self.tx.version == 3:
             write_bitcoin_varint(self.serialized_tx, 0)  # nJoinSplit
         elif self.tx.version == 4:
@@ -69,11 +71,13 @@ class Overwintered(Bitcoinlike):
     def write_tx_header(
         self, w: Writer, tx: Union[SignTx, TransactionType], witness_marker: bool
     ) -> None:
+        assert tx.version_group_id is not None  # XXX not checked anywhere
         # nVersion | fOverwintered
         write_uint32(w, tx.version | OVERWINTERED)
         write_uint32(w, tx.version_group_id)  # nVersionGroupId
 
     def write_tx_footer(self, w: Writer, tx: Union[SignTx, TransactionType]) -> None:
+        assert tx.expiry is not None  # checked in sanitize_*
         write_uint32(w, tx.lock_time)
         write_uint32(w, tx.expiry)  # expiryHeight
 
@@ -86,6 +90,10 @@ class Overwintered(Bitcoinlike):
         self.h_outputs = HashWriter(blake2b(outlen=32, personal=b"ZcashOutputsHash"))
 
     def hash143_preimage_hash(self, txi: TxInputType, pubkeyhash: bytes) -> bytes:
+        assert self.tx.version_group_id is not None  # XXX not checked anywhere
+        assert self.tx.expiry is not None  # checked in sanitize_*
+        assert txi.amount is not None  # checked in caller
+
         h_preimage = HashWriter(
             blake2b(
                 outlen=32,

@@ -60,6 +60,7 @@ class Bitcoinlike(Bitcoin):
     ) -> None:
         writers.write_uint32(w, tx.version)  # nVersion
         if self.coin.timestamp:
+            assert tx.timestamp is not None  # checked in sanitize_*
             writers.write_uint32(w, tx.timestamp)
         if witness_marker:
             write_bitcoin_varint(w, 0x00)  # segwit witness marker
@@ -71,6 +72,7 @@ class Bitcoinlike(Bitcoin):
         await super().write_prev_tx_footer(w, tx, prev_hash)
 
         if self.coin.extra_data:
+            assert tx.extra_data_len is not None  # checked in sanitize_*
             offset = 0
             while offset < tx.extra_data_len:
                 size = min(1024, tx.extra_data_len - offset)

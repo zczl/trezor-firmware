@@ -84,6 +84,7 @@ class Decred(Bitcoin):
             key_sign_pub = key_sign.public_key()
 
             if txi_sign.script_type == InputScriptType.SPENDMULTISIG:
+                assert txi_sign.multisig is not None
                 prev_pkscript = scripts.output_script_multisig(
                     multisig.multisig_get_pubkeys(txi_sign.multisig),
                     txi_sign.multisig.m,
@@ -160,6 +161,8 @@ class Decred(Bitcoin):
     ) -> None:
         writers.write_uint64(w, txo.amount)
         if isinstance(txo, TxOutputBinType):
+            # XXX the following assertion isn't validated anywhere AFAICT
+            assert txo.decred_script_version is not None
             writers.write_uint16(w, txo.decred_script_version)
         else:
             writers.write_uint16(w, DECRED_SCRIPT_VERSION)
@@ -183,6 +186,7 @@ class Decred(Bitcoin):
     def write_tx_footer(
         self, w: writers.Writer, tx: Union[SignTx, TransactionType]
     ) -> None:
+        assert tx.expiry is not None  # checked in sanitize_*
         writers.write_uint32(w, tx.lock_time)
         writers.write_uint32(w, tx.expiry)
 

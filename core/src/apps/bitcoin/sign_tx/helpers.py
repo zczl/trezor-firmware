@@ -21,9 +21,13 @@ from apps.common.coininfo import CoinInfo
 from ..writers import TX_HASH_SIZE
 
 if False:
-    from typing import Any, Awaitable, Dict
+    from typing import overload, Awaitable, Dict, Union
     from trezor.messages.TxInputType import EnumTypeInputScriptType
     from trezor.messages.TxOutputType import EnumTypeOutputScriptType
+
+else:
+    # simulate typing.overload
+    overload = lambda x: None  # noqa: E731
 
 MULTISIG_INPUT_SCRIPT_TYPES = (
     InputScriptType.SPENDMULTISIG,
@@ -98,27 +102,28 @@ class UiConfirmNonDefaultLocktime:
     __eq__ = utils.obj_eq
 
 
-def confirm_output(output: TxOutputType, coin: CoinInfo) -> Awaitable[Any]:  # type: ignore
+def confirm_output(output: TxOutputType, coin: CoinInfo) -> Awaitable[None]:  # type: ignore
     return (yield UiConfirmOutput(output, coin))
 
 
-def confirm_total(spending: int, fee: int, coin: CoinInfo) -> Awaitable[Any]:  # type: ignore
+def confirm_total(spending: int, fee: int, coin: CoinInfo) -> Awaitable[None]:  # type: ignore
     return (yield UiConfirmTotal(spending, fee, coin))
 
 
-def confirm_feeoverthreshold(fee: int, coin: CoinInfo) -> Awaitable[Any]:  # type: ignore
+def confirm_feeoverthreshold(fee: int, coin: CoinInfo) -> Awaitable[None]:  # type: ignore
     return (yield UiConfirmFeeOverThreshold(fee, coin))
 
 
-def confirm_foreign_address(address_n: list) -> Awaitable[Any]:  # type: ignore
+def confirm_foreign_address(address_n: list) -> Awaitable[None]:  # type: ignore
     return (yield UiConfirmForeignAddress(address_n))
 
 
-def confirm_nondefault_locktime(lock_time: int) -> Awaitable[Any]:  # type: ignore
+def confirm_nondefault_locktime(lock_time: int) -> Awaitable[None]:  # type: ignore
     return (yield UiConfirmNonDefaultLocktime(lock_time))
 
 
-def request_tx_meta(tx_req: TxRequest, coin: CoinInfo, tx_hash: bytes = None) -> Awaitable[Any]:  # type: ignore
+def request_tx_meta(tx_req: TxRequest, coin: CoinInfo, tx_hash: bytes = None) -> Awaitable[TransactionType]:  # type: ignore
+    assert tx_req.details is not None
     tx_req.request_type = TXMETA
     tx_req.details.tx_hash = tx_hash
     ack = yield tx_req
@@ -129,7 +134,8 @@ def request_tx_meta(tx_req: TxRequest, coin: CoinInfo, tx_hash: bytes = None) ->
 
 def request_tx_extra_data(  # type: ignore
     tx_req: TxRequest, offset: int, size: int, tx_hash: bytes = None
-) -> Awaitable[Any]:
+) -> Awaitable[bytearray]:
+    assert tx_req.details is not None
     tx_req.request_type = TXEXTRADATA
     tx_req.details.extra_data_offset = offset
     tx_req.details.extra_data_len = size
@@ -140,17 +146,33 @@ def request_tx_extra_data(  # type: ignore
     return ack.tx.extra_data
 
 
-def request_tx_input(tx_req: TxRequest, i: int, coin: CoinInfo, tx_hash: bytes = None) -> Awaitable[Any]:  # type: ignore
+def request_tx_input(tx_req: TxRequest, i: int, coin: CoinInfo, tx_hash: bytes = None) -> Awaitable[TxInputType]:  # type: ignore
+    assert tx_req.details is not None
     tx_req.request_type = TXINPUT
     tx_req.details.request_index = i
     tx_req.details.tx_hash = tx_hash
     ack = yield tx_req
     _clear_tx_request(tx_req)
     gc.collect()
-    return sanitize_tx_input(ack.tx, coin)
+    return sanitize_tx_input(ack.tx, coin, is_prev=tx_hash is not None)
 
 
-def request_tx_output(tx_req: TxRequest, i: int, coin: CoinInfo, tx_hash: bytes = None) -> Awaitable[Any]:  # type: ignore
+@overload  # noqa: F811
+def request_tx_output(
+    tx_req: TxRequest, i: int, coin: CoinInfo
+) -> Awaitable[TxOutputType]:
+    ...
+
+
+@overload  # noqa: F811
+def request_tx_output(
+    tx_req: TxRequest, i: int, coin: CoinInfo, tx_hash: bytes
+) -> Awaitable[TxOutputBinType]:
+    ...
+
+
+def request_tx_output(tx_req: TxRequest, i: int, coin: CoinInfo, tx_hash: bytes = None) -> Awaitable[Union[TxOutputType, TxOutputBinType]]:  # type: ignore  # noqa: F811
+    assert tx_req.details is not None
     tx_req.request_type = TXOUTPUT
     tx_req.details.request_index = i
     tx_req.details.tx_hash = tx_hash
@@ -163,7 +185,7 @@ def request_tx_output(tx_req: TxRequest, i: int, coin: CoinInfo, tx_hash: bytes 
         return sanitize_tx_binoutput(ack.tx, coin)
 
 
-def request_tx_finish(tx_req: TxRequest) -> Awaitable[Any]:  # type: ignore
+def request_tx_finish(tx_req: TxRequest) -> Awaitable[None]:  # type: ignore
     tx_req.request_type = TXFINISHED
     yield tx_req
     _clear_tx_request(tx_req)
@@ -171,6 +193,9 @@ def request_tx_finish(tx_req: TxRequest) -> Awaitable[Any]:  # type: ignore
 
 
 def _clear_tx_request(tx_req: TxRequest) -> None:
+    assert tx_req.details is not None
+    assert tx_req.serialized is not None
+    assert tx_req.serialized.serialized_tx is not None
     tx_req.request_type = None
     tx_req.details.request_index = None
     tx_req.details.tx_hash = None
@@ -178,7 +203,8 @@ def _clear_tx_request(tx_req: TxRequest) -> None:
     tx_req.details.extra_data_offset = None
     tx_req.serialized.signature = None
     tx_req.serialized.signature_index = None
-    tx_req.serialized.serialized_tx[:] = bytes()
+    # mypy thinks serialized_tx is `bytes`, which doesn't support indexed assignment
+    tx_req.serialized.serialized_tx[:] = bytes()  # type: ignore
 
 
 # Data sanitizers
@@ -186,11 +212,11 @@ def _clear_tx_request(tx_req: TxRequest) -> None:
 
 
 def sanitize_sign_tx(tx: SignTx, coin: CoinInfo) -> SignTx:
-    tx.version = tx.version if tx.version is not None else 1
-    tx.lock_time = tx.lock_time if tx.lock_time is not None else 0
-    tx.inputs_count = tx.inputs_count if tx.inputs_count is not None else 0
-    tx.outputs_count = tx.outputs_count if tx.outputs_count is not None else 0
-    tx.coin_name = tx.coin_name if tx.coin_name is not None else "Bitcoin"
+    # tx.version = tx.version if tx.version is not None else 1
+    # tx.lock_time = tx.lock_time if tx.lock_time is not None else 0
+    # tx.inputs_count = tx.inputs_count if tx.inputs_count is not None else 0
+    # tx.outputs_count = tx.outputs_count if tx.outputs_count is not None else 0
+    # tx.coin_name = tx.coin_name if tx.coin_name is not None else "Bitcoin"
     if coin.decred or coin.overwintered:
         tx.expiry = tx.expiry if tx.expiry is not None else 0
     elif tx.expiry:
@@ -210,8 +236,8 @@ def sanitize_sign_tx(tx: SignTx, coin: CoinInfo) -> SignTx:
 
 
 def sanitize_tx_meta(tx: TransactionType, coin: CoinInfo) -> TransactionType:
-    tx.version = tx.version if tx.version is not None else 1
-    tx.lock_time = tx.lock_time if tx.lock_time is not None else 0
+    # tx.version = tx.version if tx.version is not None else 1
+    # tx.lock_time = tx.lock_time if tx.lock_time is not None else 0
     tx.inputs_cnt = tx.inputs_cnt if tx.inputs_cnt is not None else 0
     tx.outputs_cnt = tx.outputs_cnt if tx.outputs_cnt is not None else 0
     if coin.extra_data:
@@ -236,10 +262,14 @@ def sanitize_tx_meta(tx: TransactionType, coin: CoinInfo) -> TransactionType:
     return tx
 
 
-def sanitize_tx_input(tx: TransactionType, coin: CoinInfo) -> TxInputType:
+def sanitize_tx_input(
+    tx: TransactionType, coin: CoinInfo, is_prev: bool = False
+) -> TxInputType:
     txi = tx.inputs[0]
     if txi.script_type is None:
         txi.script_type = InputScriptType.SPENDADDRESS
+    if is_prev and txi.script_sig is None:
+        raise wire.DataError("Missing script_sig field.")
     if txi.sequence is None:
         txi.sequence = 0xFFFFFFFF
     if txi.prev_index is None:
@@ -274,6 +304,8 @@ def sanitize_tx_output(tx: TransactionType, coin: CoinInfo) -> TxOutputType:
             raise wire.DataError("OP_RETURN output with non-zero amount")
         if txo.address or txo.address_n or txo.multisig:
             raise wire.DataError("OP_RETURN output with address or multisig")
+        if txo.op_return_data is None:
+            raise wire.DataError("OP_RETURN output without data")  # TODO device test
     else:
         if txo.op_return_data:
             raise wire.DataError(

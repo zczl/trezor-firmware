@@ -4,22 +4,21 @@ from apps.common import HARDENED, coininfo
 from apps.common.seed import get_keychain
 
 if False:
-    from protobuf import MessageType
-    from typing import Callable, Optional, Tuple, TypeVar
+    from typing import Awaitable, Callable, Optional, Sequence, Tuple, TypeVar
     from typing_extensions import Protocol
 
-    from apps.common.seed import Keychain, MsgOut, Handler
+    from apps.common.seed import Handler, Keychain, MsgOut, Namespace
 
-    class MsgWithCoinName(MessageType, Protocol):
-        coin_name = ...  # type: Optional[str]
+    class MsgWithCoinName(Protocol):
+        coin_name = ...  # type: str
 
     MsgIn = TypeVar("MsgIn", bound=MsgWithCoinName)
     HandlerWithCoinInfo = Callable[
-        [wire.Context, MsgIn, Keychain, coininfo.CoinInfo], MsgOut
+        [wire.Context, MsgIn, Keychain, coininfo.CoinInfo], Awaitable[MsgOut]
     ]
 
 
-def get_namespaces_for_coin(coin: coininfo.CoinInfo):
+def get_namespaces_for_coin(coin: coininfo.CoinInfo) -> Sequence[Namespace]:
     namespaces = []
     curve = coin.curve_name
     slip44_id = coin.slip44 | HARDENED

@@ -31,6 +31,7 @@ def input_derive_script(
     signature: Optional[bytes],
 ) -> bytes:
     if txi.script_type == InputScriptType.SPENDADDRESS:
+        assert signature is not None
         # p2pkh or p2sh
         return input_script_p2pkh_or_p2sh(pubkey, signature, hash_type)
 
@@ -52,6 +53,8 @@ def input_derive_script(
         return input_script_native_p2wpkh_or_p2wsh()
     elif txi.script_type == InputScriptType.SPENDMULTISIG:
         # p2sh multisig
+        assert txi.multisig is not None
+        assert signature is not None
         signature_index = multisig_pubkey_index(txi.multisig, pubkey)
         return input_script_multisig(
             txi.multisig, signature, signature_index, hash_type, coin
@@ -62,7 +65,10 @@ def input_derive_script(
 
 def output_derive_script(txo: TxOutputType, coin: CoinInfo) -> bytes:
     if txo.script_type == OutputScriptType.PAYTOOPRETURN:
+        assert txo.op_return_data is not None  # checked in sanitize_tx_output
         return output_script_paytoopreturn(txo.op_return_data)
+
+    assert txo.address is not None  # ensured in Bitcoin.output_derive_script
 
     if coin.bech32_prefix and txo.address.startswith(coin.bech32_prefix):
         # p2wpkh or p2wsh
@@ -256,8 +262,8 @@ def witness_p2wsh(
     signature_index: int,
     sighash: int,
 ) -> bytearray:
-    # get other signatures, stretch with None to the number of the pubkeys
-    signatures = multisig.signatures + [None] * (
+    # get other signatures, stretch with empty bytes to the number of the pubkeys
+    signatures = multisig.signatures + [b""] * (
         multisig_get_pubkey_count(multisig) - len(multisig.signatures)
     )
     # fill in our signature

@@ -28,7 +28,7 @@ def ecdsa_hash_pubkey(pubkey: bytes, coin: CoinInfo) -> bytes:
     return coin.script_hash(pubkey)
 
 
-def encode_bech32_address(prefix: str, script: bytes) -> bytes:
+def encode_bech32_address(prefix: str, script: bytes) -> str:
     address = bech32.encode(prefix, _BECH32_WITVER, script)
     if address is None:
         raise wire.ProcessError("Invalid address")
@@ -39,4 +39,5 @@ def decode_bech32_address(prefix: str, address: str) -> bytes:
     witver, raw = bech32.decode(prefix, address)
     if witver != _BECH32_WITVER:
         raise wire.ProcessError("Invalid address witness program")
+    assert raw is not None
     return bytes(raw)

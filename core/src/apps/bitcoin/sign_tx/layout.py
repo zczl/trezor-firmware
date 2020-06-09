@@ -38,6 +38,7 @@ async def confirm_output(
 
     if output.script_type == OutputScriptType.PAYTOOPRETURN:
         data = output.op_return_data
+        assert data is not None
         if omni.is_valid(data):
             # OMNI transaction
             text = Text("OMNI transaction", ui.ICON_SEND, ui.GREEN)
@@ -51,6 +52,7 @@ async def confirm_output(
             text.mono(*split_op_return(hex_data))
     else:
         address = output.address
+        assert address is not None
         address_short = addresses.address_short(coin, address)
         text = Text("Confirm sending", ui.ICON_SEND, ui.GREEN)
         text.normal(format_coin_amount(output.amount, coin) + " to")
