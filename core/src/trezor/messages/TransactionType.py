@@ -22,8 +22,8 @@ class TransactionType(p.MessageType):
         inputs: List[TxInputType] = None,
         bin_outputs: List[TxOutputBinType] = None,
         outputs: List[TxOutputType] = None,
-        version: int = None,
-        lock_time: int = None,
+        version: int = 1,
+        lock_time: int = 0,
         inputs_cnt: int = None,
         outputs_cnt: int = None,
         extra_data: bytes = None,
@@ -50,10 +50,10 @@ class TransactionType(p.MessageType):
     @classmethod
     def get_fields(cls) -> Dict:
         return {
-            1: ('version', p.UVarintType, 0),
+            1: ('version', p.UVarintType, 0),  # default=1
             2: ('inputs', TxInputType, p.FLAG_REPEATED),
             3: ('bin_outputs', TxOutputBinType, p.FLAG_REPEATED),
-            4: ('lock_time', p.UVarintType, 0),
+            4: ('lock_time', p.UVarintType, 0),  # default=0
             5: ('outputs', TxOutputType, p.FLAG_REPEATED),
             6: ('inputs_cnt', p.UVarintType, 0),
             7: ('outputs_cnt', p.UVarintType, 0),

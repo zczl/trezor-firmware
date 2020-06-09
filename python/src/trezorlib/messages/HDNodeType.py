@@ -19,15 +19,15 @@ class HDNodeType(p.MessageType):
         fingerprint: int,
         child_num: int,
         chain_code: bytes,
+        public_key: bytes,
         private_key: bytes = None,
-        public_key: bytes = None,
     ) -> None:
         self.depth = depth
         self.fingerprint = fingerprint
         self.child_num = child_num
         self.chain_code = chain_code
-        self.private_key = private_key
         self.public_key = public_key
+        self.private_key = private_key
 
     @classmethod
     def get_fields(cls) -> Dict:
@@ -37,5 +37,5 @@ class HDNodeType(p.MessageType):
             3: ('child_num', p.UVarintType, p.FLAG_REQUIRED),
             4: ('chain_code', p.BytesType, p.FLAG_REQUIRED),
             5: ('private_key', p.BytesType, 0),
-            6: ('public_key', p.BytesType, 0),
+            6: ('public_key', p.BytesType, p.FLAG_REQUIRED),
         }

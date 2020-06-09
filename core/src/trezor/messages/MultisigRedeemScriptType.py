@@ -18,11 +18,11 @@ class MultisigRedeemScriptType(p.MessageType):
     def __init__(
         self,
         *,
+        m: int,
         pubkeys: List[HDNodePathType] = None,
         signatures: List[bytes] = None,
         nodes: List[HDNodeType] = None,
         address_n: List[int] = None,
-        m: int = None,
     ) -> None:
         self.pubkeys = pubkeys if pubkeys is not None else []
         self.signatures = signatures if signatures is not None else []
@@ -35,7 +35,7 @@ class MultisigRedeemScriptType(p.MessageType):
         return {
             1: ('pubkeys', HDNodePathType, p.FLAG_REPEATED),
             2: ('signatures', p.BytesType, p.FLAG_REPEATED),
-            3: ('m', p.UVarintType, 0),
+            3: ('m', p.UVarintType, p.FLAG_REQUIRED),
             4: ('nodes', HDNodeType, p.FLAG_REPEATED),
             5: ('address_n', p.UVarintType, p.FLAG_REPEATED),
         }
