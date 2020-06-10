@@ -313,11 +313,11 @@ class race(Syscall):
 
         for child in self.children:
             if isinstance(child, _type_gen):
-                child_task = child
+                child_task = child  # type: Task
             else:
                 child_task = iter(child)  # type: ignore
-            schedule(child_task, None, None, finalizer)  # type: ignore
-            scheduled.append(child_task)  # type: ignore
+            schedule(child_task, None, None, finalizer)
+            scheduled.append(child_task)
             # TODO: document the types here
 
     def exit(self, except_for: Task = None) -> None:
