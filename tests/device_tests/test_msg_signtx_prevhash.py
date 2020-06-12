@@ -61,7 +61,10 @@ def hash_tx(data: bytes) -> bytes:
 
 def _check_error_message(value: bytes, model: str, message: str):
     if model != "1":
-        assert message == "Provided prev_hash is invalid."
+        if value is None:
+            assert message == "Failed to decode message"
+        else:
+            assert message == "Provided prev_hash is invalid."
         return
 
     # T1 has several possible errors
@@ -90,7 +93,7 @@ def test_invalid_prev_hash(client, prev_hash):
     )
 
     with pytest.raises(TrezorFailure) as e:
-        btc.sign_tx(client, "Testnet", [inp1], [out1])
+        btc.sign_tx(client, "Testnet", [inp1], [out1], prev_txes={})
     _check_error_message(prev_hash, client.features.model, e.value.message)
 
 

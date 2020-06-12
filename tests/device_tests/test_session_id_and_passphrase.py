@@ -352,7 +352,7 @@ def test_passphrase_length(client):
         _init_session(client)
         response = client.call_raw(XPUB_REQUEST)
         assert isinstance(response, messages.PassphraseRequest)
-        response = client.call_raw(messages.PassphraseAck(passphrase))
+        response = client.call_raw(messages.PassphraseAck(passphrase=passphrase))
         if expected_result:
             assert isinstance(response, messages.PublicKey)
         else:

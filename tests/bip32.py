@@ -88,13 +88,6 @@ def get_subnode(node, i):
     I64 = hmac.HMAC(key=node.chain_code, msg=data, digestmod=hashlib.sha512).digest()
     I_left_as_exponent = string_to_number(I64[:32])
 
-    node_out = messages.HDNodeType(
-        depth=node.depth + 1,
-        child_num=i,
-        chain_code=I64[32:],
-        fingerprint=fingerprint(node.public_key),
-    )
-
     # BIP32 magic converts old public key to new public point
     x, y = sec_to_public_pair(node.public_key)
     point = I_left_as_exponent * SECP256k1.generator + Point(
@@ -104,10 +97,14 @@ def get_subnode(node, i):
     if point == INFINITY:
         raise ValueError("Point cannot be INFINITY")
 
-    # Convert public point to compressed public key
-    node_out.public_key = point_to_pubkey(point)
-
-    return node_out
+    return messages.HDNodeType(
+        depth=node.depth + 1,
+        child_num=i,
+        chain_code=I64[32:],
+        fingerprint=fingerprint(node.public_key),
+        # Convert public point to compressed public key
+        public_key=point_to_pubkey(point),
+    )
 
 
 def serialize(node, version=0x0488B21E):
@@ -136,6 +133,7 @@ def deserialize(xpub):
         fingerprint=struct.unpack(">I", data[5:9])[0],
         child_num=struct.unpack(">I", data[9:13])[0],
         chain_code=data[13:45],
+        public_key=None,
     )
 
     key = data[45:-4]

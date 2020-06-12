@@ -242,6 +242,45 @@ class DebugUI:
         return self.passphrase
 
 
+class MessageFilter:
+    def __init__(self, message_type, **fields):
+        self.message_type = message_type
+        self.fields = fields
+
+    def update_fields(self, **fields):
+        self.fields.update(fields)
+        return self
+
+    @classmethod
+    def from_message(cls, message):
+        fields = {}
+        for field in message.keys():
+            value = getattr(message, field)
+            if value in (None, []):
+                continue
+            fields[field] = value
+        return cls(type(message), **fields)
+
+    def match(self, message):
+        if type(message) != self.message_type:
+            return False
+
+        for field, value in self.fields.items():
+            if getattr(message, field, None) != value:
+                return False
+
+        return True
+
+
+class MessageFilterGenerator:
+    def __getattr__(self, key):
+        message_type = getattr(messages, key)
+        return MessageFilter(message_type).update_fields
+
+
+message_filters = MessageFilterGenerator()
+
+
 class TrezorClientDebugLink(TrezorClient):
     # This class implements automatic responses
     # and other functionality for unit tests
@@ -421,9 +460,19 @@ class TrezorClientDebugLink(TrezorClient):
             e if isinstance(e, tuple) else (True, e) for e in expected
         ]
 
+        def make_filter(msg):
+            if isinstance(msg, MessageFilter):
+                return msg
+            elif isinstance(msg, protobuf.MessageType):
+                return MessageFilter.from_message(msg)
+            elif isinstance(msg, type) and issubclass(msg, protobuf.MessageType):
+                return MessageFilter(msg)
+            else:
+                raise RuntimeError("Invalid expected response")
+
         # only apply those items that are (True, message)
         self.expected_responses = [
-            expected for valid, expected in expected_with_validity if valid
+            make_filter(expected) for valid, expected in expected_with_validity if valid
         ]
 
         self.current_response = 0
@@ -525,14 +574,8 @@ class TrezorClientDebugLink(TrezorClient):
 
         expected = self.expected_responses[self.current_response]
 
-        if msg.__class__ != expected.__class__:
+        if not expected.match(msg):
             self._raise_unexpected_response(msg)
-
-        for field, value in expected.__dict__.items():
-            if value is None or value == []:
-                continue
-            if getattr(msg, field) != value:
-                self._raise_unexpected_response(msg)
 
         self.current_response += 1
 
