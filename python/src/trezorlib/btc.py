@@ -143,8 +143,6 @@ def sign_tx(
     (`inputs_count`, `outputs_count`, `coin_name`) will be inferred from the arguments
     and cannot be overriden by kwargs.
     """
-    this_tx = messages.TransactionType(inputs=inputs, outputs=outputs)
-
     signtx = messages.SignTx(
         coin_name=coin_name, inputs_count=len(inputs), outputs_count=len(outputs),
     )
@@ -169,6 +167,15 @@ def sign_tx(
         tx_copy.extra_data_len = len(tx.extra_data or b"")
         tx_copy.extra_data = None
         return tx_copy
+
+    this_tx = messages.TransactionType(
+        inputs=inputs,
+        outputs=outputs,
+        inputs_cnt=len(inputs),
+        outputs_cnt=len(outputs),
+        # pick either kw-provided or default value from the SignTx request
+        version=signtx.version,
+    )
 
     R = messages.RequestType
     while isinstance(res, messages.TxRequest):
