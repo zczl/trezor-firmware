@@ -20,7 +20,7 @@ class RecoveryDevice(p.MessageType):
         word_count: int = None,
         passphrase_protection: bool = None,
         pin_protection: bool = None,
-        language: str = "en-US",
+        language: str = None,
         label: str = None,
         enforce_wordlist: bool = None,
         type: EnumTypeRecoveryDeviceType = None,
@@ -43,7 +43,7 @@ class RecoveryDevice(p.MessageType):
             1: ('word_count', p.UVarintType, 0),
             2: ('passphrase_protection', p.BoolType, 0),
             3: ('pin_protection', p.BoolType, 0),
-            4: ('language', p.UnicodeType, 0),  # default=en-US
+            4: ('language', p.UnicodeType, 0),
             5: ('label', p.UnicodeType, 0),
             6: ('enforce_wordlist', p.BoolType, 0),
             8: ('type', p.EnumType("RecoveryDeviceType", (0, 1)), 0),
