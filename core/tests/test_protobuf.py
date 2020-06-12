@@ -7,8 +7,8 @@ if False:
 
 
 class Message(protobuf.MessageType):
-    def __init__(self, uint_field: int = 0, enum_field: int = 0) -> None:
-        self.sint_field = uint_field
+    def __init__(self, sint_field: int = 0, enum_field: int = 0) -> None:
+        self.sint_field = sint_field
         self.enum_field = enum_field
 
     @classmethod

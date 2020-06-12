@@ -69,7 +69,7 @@ class TestSignSegwitTxNativeP2WPKH_GRS(unittest.TestCase):
             address_n=[],
             multisig=None,
         )
-        tx = SignTx(coin_name='Groestlcoin Testnet', version=None, lock_time=650713, inputs_count=1, outputs_count=2)
+        tx = SignTx(coin_name='Groestlcoin Testnet', version=1, lock_time=650713, inputs_count=1, outputs_count=2)
 
         messages = [
             None,
@@ -193,7 +193,7 @@ class TestSignSegwitTxNativeP2WPKH_GRS(unittest.TestCase):
             amount=12300000 - 11000 - 5000000,
             multisig=None,
         )
-        tx = SignTx(coin_name='Groestlcoin Testnet', version=None, lock_time=650713, inputs_count=1, outputs_count=2)
+        tx = SignTx(coin_name='Groestlcoin Testnet', version=1, lock_time=650713, inputs_count=1, outputs_count=2)
 
         messages = [
             None,

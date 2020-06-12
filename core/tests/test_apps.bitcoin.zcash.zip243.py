@@ -192,17 +192,19 @@ class TestZcashZip243(unittest.TestCase):
             zip243 = Overwintered(tx, None, coin)
 
             for i in v["inputs"]:
-                txi = TxInputType()
-                txi.amount = i["amount"]
-                txi.prev_hash = unhexlify(i["prevout"][0])
-                txi.prev_index = i["prevout"][1]
-                txi.script_type = i["script_type"]
-                txi.sequence = i["sequence"]
+                txi = TxInputType(
+                    amount = i["amount"],
+                    prev_hash = unhexlify(i["prevout"][0]),
+                    prev_index = i["prevout"][1],
+                    script_type = i["script_type"],
+                    sequence = i["sequence"],
+                )
                 zip243.hash143_add_input(txi)
             for o in v["outputs"]:
-                txo = TxOutputBinType()
-                txo.amount = o["amount"]
-                txo.script_pubkey = unhexlify(o["script_pubkey"])
+                txo = TxOutputBinType(
+                    amount = o["amount"],
+                    script_pubkey = unhexlify(o["script_pubkey"]),
+                )
                 zip243.hash143_add_output(txo, txo.script_pubkey)
 
             self.assertEqual(hexlify(get_tx_hash(zip243.h_prevouts)), v["prevouts_hash"])

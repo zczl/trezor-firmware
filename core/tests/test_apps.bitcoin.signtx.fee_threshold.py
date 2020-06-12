@@ -64,7 +64,7 @@ class TestSignTxFeeThreshold(unittest.TestCase):
                             multisig=None,
                             script_type=OutputScriptType.PAYTOADDRESS,
                             address_n=[])
-        tx = SignTx(coin_name=None, version=None, lock_time=None, inputs_count=1, outputs_count=1)
+        tx = SignTx(coin_name=None, version=1, lock_time=0, inputs_count=1, outputs_count=1)
 
         messages = [
             None,
@@ -133,7 +133,7 @@ class TestSignTxFeeThreshold(unittest.TestCase):
                             script_type=OutputScriptType.PAYTOADDRESS,
                             multisig=None,
                             address_n=[])
-        tx = SignTx(coin_name=None, version=None, lock_time=None, inputs_count=1, outputs_count=1)
+        tx = SignTx(coin_name=None, version=1, lock_time=0, inputs_count=1, outputs_count=1)
 
         messages = [
             None,
