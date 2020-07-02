@@ -206,3 +206,28 @@ def test_signmessage(client, coin_name, path, script_type, address, message, sig
     )
     assert sig.address == address
     assert sig.signature.hex() == signature
+
+
+@pytest.mark.skip_t1
+def test_signmessage_explain(client):
+    def input_flow():
+        yield  # show explanation
+        text = client.debug.wait_layout().text
+        assert text.startswith("Message signature Signed message is a")
+
+        client.debug.press_yes()
+        yield  # show message
+        text = client.debug.wait_layout().text
+        assert text.startswith("Sign message This is an example")
+
+        client.debug.press_yes()
+
+    with client:
+        client.set_input_flow(input_flow)
+        btc.sign_message(
+            client,
+            coin_name="Bitcoin",
+            n=parse_path("44h/0h/0h/0/0"),
+            script_type=S.SPENDADDRESS,
+            message="This is an example of a signed message.",
+        )

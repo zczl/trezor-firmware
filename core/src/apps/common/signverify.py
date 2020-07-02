@@ -59,3 +59,14 @@ async def require_confirm_verify_message(
     text = Text(header, new_lines=False)
     text.mono(*split_message(message))
     await require_confirm(ctx, text)
+
+
+async def require_confirm_explain_sign(ctx: wire.Context) -> None:
+    text = Text("Message signature")
+    text.normal(
+        "Signed message is a",
+        "proof that you can spend",
+        "coins from the chosen",
+        "address.",
+    )
+    await require_confirm(ctx, text)

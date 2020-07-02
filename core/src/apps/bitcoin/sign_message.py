@@ -4,7 +4,11 @@ from trezor.messages.InputScriptType import SPENDADDRESS, SPENDP2SHWITNESS, SPEN
 from trezor.messages.MessageSignature import MessageSignature
 
 from apps.common.paths import validate_path
-from apps.common.signverify import message_digest, require_confirm_sign_message
+from apps.common.signverify import (
+    message_digest,
+    require_confirm_explain_sign,
+    require_confirm_sign_message,
+)
 
 from .addresses import get_address, validate_full_path
 from .keychain import with_keychain
@@ -16,6 +20,7 @@ async def sign_message(ctx, msg, keychain, coin):
     address_n = msg.address_n
     script_type = msg.script_type or 0
 
+    await require_confirm_explain_sign(ctx)
     await require_confirm_sign_message(ctx, "Sign message", message)
     await validate_path(
         ctx,

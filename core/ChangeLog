@@ -12,6 +12,7 @@ _Most likely to be released on July 1st._
 - Soft lock.  #958
 - Auto lock.  #1027
 - Dedicated `initialized` field in storage.
+- Explanatory dialog in Bitcoin message signing.
 
 ### Deprecated
 
