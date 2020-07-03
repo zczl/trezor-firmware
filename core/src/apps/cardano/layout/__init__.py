@@ -6,6 +6,7 @@ from trezor.ui.scroll import Paginated
 from trezor.ui.text import Text
 from trezor.utils import chunks
 
+from apps.cardano.protocol_magics import ProtocolMagics
 from apps.common.confirm import require_confirm, require_hold_to_confirm
 
 
@@ -35,7 +36,7 @@ async def confirm_sending(ctx, amount, to):
     await require_confirm(ctx, Paginated(pages))
 
 
-async def confirm_transaction(ctx, amount, fee, network_name):
+async def confirm_transaction(ctx, amount, fee, protocol_magic):
     t1 = Text("Confirm transaction", ui.ICON_SEND, ui.GREEN)
     t1.normal("Total amount:")
     t1.bold(format_coin_amount(amount))
@@ -44,6 +45,6 @@ async def confirm_transaction(ctx, amount, fee, network_name):
 
     t2 = Text("Confirm transaction", ui.ICON_SEND, ui.GREEN)
     t2.normal("Network:")
-    t2.bold(network_name)
+    t2.bold(ProtocolMagics.to_ui_string(protocol_magic))
 
     await require_hold_to_confirm(ctx, Paginated([t1, t2]))
