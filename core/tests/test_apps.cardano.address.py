@@ -4,6 +4,7 @@ from apps.common import seed
 from apps.common import HARDENED
 from trezor.crypto import bip32, slip39
 if not utils.BITCOIN_ONLY:
+    from apps.cardano.protocol_magics import ProtocolMagics
     from apps.cardano.address import (
         _get_address_root,
         _address_hash,
@@ -31,7 +32,7 @@ class TestCardanoAddress(unittest.TestCase):
 
         for i, expected in enumerate(addresses):
             # 44'/1815'/0'/0/i'
-            address, _ = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, 0x80000000 + i])
+            address, _ = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, 0x80000000 + i], ProtocolMagics.MAINNET)
             self.assertEqual(expected, address)
 
         nodes = [
@@ -56,7 +57,7 @@ class TestCardanoAddress(unittest.TestCase):
         ]
 
         for i, (priv, ext, pub, chain) in enumerate(nodes):
-            _, n = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, 0x80000000 + i])
+            _, n = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, 0x80000000 + i], ProtocolMagics.MAINNET)
             self.assertEqual(hexlify(n.private_key()), priv)
             self.assertEqual(hexlify(n.private_key_ext()), ext)
             self.assertEqual(hexlify(seed.remove_ed25519_prefix(n.public_key())), pub)
@@ -78,7 +79,7 @@ class TestCardanoAddress(unittest.TestCase):
 
         for i, expected in enumerate(addresses):
             # 44'/1815'/0'/0/i
-            address, _ = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, i])
+            address, _ = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, i], ProtocolMagics.MAINNET)
             self.assertEqual(address, expected)
 
         nodes = [
@@ -103,7 +104,7 @@ class TestCardanoAddress(unittest.TestCase):
         ]
 
         for i, (priv, ext, pub, chain) in enumerate(nodes):
-            _, n = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, i])
+            _, n = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, i], ProtocolMagics.MAINNET)
             self.assertEqual(hexlify(n.private_key()), priv)
             self.assertEqual(hexlify(n.private_key_ext()), ext)
             self.assertEqual(hexlify(seed.remove_ed25519_prefix(n.public_key())), pub)
@@ -119,7 +120,7 @@ class TestCardanoAddress(unittest.TestCase):
         keychain = Keychain(node)
 
         # 44'/1815'
-        address, _ = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815])
+        address, _ = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815], ProtocolMagics.MAINNET)
         self.assertEqual(address, "Ae2tdPwUPEZ2FGHX3yCKPSbSgyuuTYgMxNq652zKopxT4TuWvEd8Utd92w3")
 
         priv, ext, pub, chain = (
@@ -129,7 +130,7 @@ class TestCardanoAddress(unittest.TestCase):
             b"02ac67c59a8b0264724a635774ca2c242afa10d7ab70e2bf0a8f7d4bb10f1f7a"
         )
 
-        _, n = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815])
+        _, n = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815], ProtocolMagics.MAINNET)
         self.assertEqual(hexlify(n.private_key()), priv)
         self.assertEqual(hexlify(n.private_key_ext()), ext)
         self.assertEqual(hexlify(seed.remove_ed25519_prefix(n.public_key())), pub)
@@ -235,7 +236,7 @@ class TestCardanoAddress(unittest.TestCase):
 
         for i, (address, priv, ext, pub, chain) in enumerate(nodes):
             # 44'/1815'/0'/0/i
-            a, n = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, i])
+            a, n = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, i], ProtocolMagics.MAINNET)
             self.assertEqual(a, address)
             self.assertEqual(hexlify(n.private_key()), priv)
             self.assertEqual(hexlify(n.private_key_ext()), ext)
@@ -299,12 +300,31 @@ class TestCardanoAddress(unittest.TestCase):
 
         for i, (address, priv, ext, pub, chain) in enumerate(nodes):
             # 44'/1815'/0'/0/i
-            a, n = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, i])
+            a, n = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, i], ProtocolMagics.MAINNET)
             self.assertEqual(a, address)
             self.assertEqual(hexlify(n.private_key()), priv)
             self.assertEqual(hexlify(n.private_key_ext()), ext)
             self.assertEqual(hexlify(seed.remove_ed25519_prefix(n.public_key())), pub)
             self.assertEqual(hexlify(n.chain_code()), chain)
+
+    def test_testnet_address(self):
+        mnemonic = "all all all all all all all all all all all all"
+        passphrase = ""
+        node = bip32.from_mnemonic_cardano(mnemonic, passphrase)
+        node.derive_cardano(0x80000000 | 44)
+        node.derive_cardano(0x80000000 | 1815)
+        keychain = Keychain(node)
+
+        addresses = [
+            "2657WMsDfac6UJfdDkU3ZZ7UorsdvDA1bGGMcTBEvjzS5aZXSp1kdeGp4XXJWiJLD",
+            "2657WMsDfac6ZkkLpCdrgDjcnnr9qCBYVdUtJbvUVdsL2VCu5fcxgHkk982H2xMuR",
+            "2657WMsDfac5jcLLi4ashkQmgKXKTsH4DZX8PiJMYpdA69zMVdwdzRc1jxQxb4CJQ",
+        ]
+
+        for i, expected in enumerate(addresses):
+            # 44'/1815'/0'/0/i'
+            address, _ = derive_address_and_node(keychain, [0x80000000 | 44, 0x80000000 | 1815, 0x80000000, 0, i], ProtocolMagics.TESTNET)
+            self.assertEqual(expected, address)
 
 if __name__ == '__main__':
     unittest.main()

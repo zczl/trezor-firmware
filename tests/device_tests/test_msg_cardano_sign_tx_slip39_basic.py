@@ -17,22 +17,27 @@
 import pytest
 
 from trezorlib import cardano, messages
+from trezorlib.cardano import PROTOCOL_MAGICS
 
 from ..common import MNEMONIC_SLIP39_BASIC_20_3of6
 
-PROTOCOL_MAGICS = {"mainnet": 764824073, "testnet": 1097911063}
+SAMPLE_INPUT = {
+    "path": "m/44'/1815'/0'/0/1",
+    "prev_hash": "1af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc",
+    "prev_index": 0,
+}
 
-SAMPLE_INPUTS = [
-    {
-        "input": {
-            "path": "m/44'/1815'/0'/0/1",
-            "prev_hash": "1af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc",
-            "prev_index": 0,
-            "type": 0,
-        },
-        "prev_tx": "839f8200d818582482582008abb575fac4c39d5bf80683f7f0c37e48f4e3d96e37d1f6611919a7241b456600ff9f8282d818582183581cda4da43db3fca93695e71dab839e72271204d28b9d964d306b8800a8a0001a7a6916a51a00305becffa0",
-    }
-]
+SAMPLE_OUTPUTS = {
+    "simple_output": {
+        "address": "Ae2tdPwUPEZCanmBz5g2GEwFqKTKpNJcGYPKfDxoNeKZ8bRHr8366kseiK2",
+        "amount": "3003112",
+    },
+    "change_output": {"path": "m/44'/1815'/0'/0/1", "amount": "1000000"},
+    "testnet_output": {
+        "address": "2657WMsDfac7BteXkJq5Jzdog4h47fPbkwUM49isuWbYAr2cFRHa3rURP236h9PBe",
+        "amount": "3003112",
+    },
+}
 
 VALID_VECTORS = [
     # Mainnet transaction without change
@@ -40,68 +45,51 @@ VALID_VECTORS = [
         # protocol magic
         PROTOCOL_MAGICS["mainnet"],
         # inputs
-        [SAMPLE_INPUTS[0]["input"]],
+        [SAMPLE_INPUT],
         # outputs
-        [
-            {
-                "address": "Ae2tdPwUPEZCanmBz5g2GEwFqKTKpNJcGYPKfDxoNeKZ8bRHr8366kseiK2",
-                "amount": "3003112",
-            }
-        ],
-        # transactions
-        [SAMPLE_INPUTS[0]["prev_tx"]],
+        [SAMPLE_OUTPUTS["simple_output"]],
+        # fee
+        42,
+        # ttl
+        10,
         # tx hash
-        "799c65e8a2c0b1dc4232611728c09d3f3eb0d811c077f8e9798f84605ef1b23d",
-        # tx body
-        "82839f8200d81858248258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00ff9f8282d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e8ffa0818200d818588582584024c4fe188a39103db88818bc191fd8571eae7b284ebcbdf2462bde97b058a95c6f7a744035f4b3ddb8f861c18446169643cc3ae85e271b4b4f0eda05cf84c65b584032a773bcd60c83880de09676c45e52cc2c2189c1b46d93de596a5cf6e3e93041c22e6e5762144feb65b40e905659c9b5e51528fa6574273279c2507a2b996f0e",
+        "73e09bdebf98a9e0f17f86a2d11e0f14f4f8dae77cdf26ff1678e821f20c8db6",
+        # serialized tx
+        "83a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030aa1008182582024c4fe188a39103db88818bc191fd8571eae7b284ebcbdf2462bde97b058a95c5840891702f10b3cea50bf32d3449d6dbd34cdeec5a282172e478421b6f1d84684a87fda755bc77d9095b96727f1f7648b670d2ff4c41bc10c612521344ccef7380ff6",
     ),
     # Mainnet transaction with change
     (
         # protocol magic (mainnet)
         PROTOCOL_MAGICS["mainnet"],
         # inputs
-        [
-            {
-                "path": "m/44'/1815'/0'/0/1",
-                "prev_hash": "1af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc",
-                "prev_index": 0,
-                "type": 0,
-            }
-        ],
+        [SAMPLE_INPUT],
         # outputs
-        [
-            {
-                "address": "Ae2tdPwUPEZCanmBz5g2GEwFqKTKpNJcGYPKfDxoNeKZ8bRHr8366kseiK2",
-                "amount": "3003112",
-            },
-            {"path": "m/44'/1815'/0'/0/1", "amount": "1000000"},
-        ],
-        # transactions
-        [SAMPLE_INPUTS[0]["prev_tx"]],
+        [SAMPLE_OUTPUTS["simple_output"], SAMPLE_OUTPUTS["change_output"]],
+        # fee
+        42,
+        # ttl
+        10,
         # tx hash
-        "5a3921053daabc6a2ffc1528963352fa8ea842bd04056371effcd58256e0cd55",
-        # tx body
-        "82839f8200d81858248258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00ff9f8282d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88282d818582183581c2ea63b3db3a1865f59c11762a5aede800ed8f2dc0605d75df2ed7c9ca0001ae82668161a000f4240ffa0818200d818588582584024c4fe188a39103db88818bc191fd8571eae7b284ebcbdf2462bde97b058a95c6f7a744035f4b3ddb8f861c18446169643cc3ae85e271b4b4f0eda05cf84c65b5840ea38a37167d652fd35ac3517a6b3a5ec73e01a9f3b6d57d645c7727856a17a2c8d9403b497e148811cb087822c49b5ab6e14b1bc78acc21eca434c3e5147260f",
+        "4c43ce4c72f145b145ae7add414722735e250d048f61c4585a5becafcbffa6ae",
+        # serialized tx
+        "83a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e882582b82d818582183581c2ea63b3db3a1865f59c11762a5aede800ed8f2dc0605d75df2ed7c9ca0001ae82668161a000f424002182a030aa1008182582024c4fe188a39103db88818bc191fd8571eae7b284ebcbdf2462bde97b058a95c5840fb62fe0fdd3f497f03148ffc1fef18f4b6e75efb21bc7207767740d8b64afebe53143f08221dfb3fcff780f811826ec95e4a37317aa6d6a0c69895da001da908f6",
     ),
     # Testnet transaction
     (
         # protocol magic
         PROTOCOL_MAGICS["testnet"],
         # inputs
-        [SAMPLE_INPUTS[0]["input"]],
+        [SAMPLE_INPUT],
         # outputs
-        [
-            {
-                "address": "Ae2tdPwUPEZCanmBz5g2GEwFqKTKpNJcGYPKfDxoNeKZ8bRHr8366kseiK2",
-                "amount": "3003112",
-            }
-        ],
-        # transactions
-        [SAMPLE_INPUTS[0]["prev_tx"]],
+        [SAMPLE_OUTPUTS["testnet_output"], SAMPLE_OUTPUTS["change_output"]],
+        # fee
+        42,
+        # ttl
+        10,
         # tx hash
-        "799c65e8a2c0b1dc4232611728c09d3f3eb0d811c077f8e9798f84605ef1b23d",
-        # tx body
-        "82839f8200d81858248258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00ff9f8282d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e8ffa0818200d818588582584024c4fe188a39103db88818bc191fd8571eae7b284ebcbdf2462bde97b058a95c6f7a744035f4b3ddb8f861c18446169643cc3ae85e271b4b4f0eda05cf84c65b58407aab2a707a6d295c0a93e396429721c48d2c09238e32112f2e1d14a8296ff463204240e7d9168e2dfe8276f426cd1f73f1254df434cdab7c942e2a920c8ce800",
+        "b84b4805b9b24e37d83538e08a077fc82b72af1cdb54b1ef454491587d1cd53a",
+        # serialized tx
+        "83a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018282582f82d818582583581cc817d85b524e3d073795819a25cdbb84cff6aa2bbb3a081980d248cba10242182a001a0fb6fc611a002dd2e882582f82d818582583581c9207eb267885eb475deddf7d325b1ab7a8ad92a0fb18ba6291e050eda10242182a001aa01941361a000f424002182a030aa1008182582024c4fe188a39103db88818bc191fd8571eae7b284ebcbdf2462bde97b058a95c584036be1a2ed66125e683e12a210d1527d533acb0a105457122cbcd39c812c5cf79ada29a091065b94da21a31891e6b4cd53e6ee1a47c970f036741012b226f220cf6",
     ),
 ]
 
@@ -111,19 +99,16 @@ VALID_VECTORS = [
 @pytest.mark.skip_t1  # T1 support is not planned
 @pytest.mark.setup_client(mnemonic=MNEMONIC_SLIP39_BASIC_20_3of6, passphrase=True)
 @pytest.mark.parametrize(
-    "protocol_magic,inputs,outputs,transactions,tx_hash,tx_body", VALID_VECTORS
+    "protocol_magic,inputs,outputs,fee,ttl,tx_hash,serialized_tx", VALID_VECTORS
 )
 def test_cardano_sign_tx(
-    client, protocol_magic, inputs, outputs, transactions, tx_hash, tx_body
+    client, protocol_magic, inputs, outputs, fee, ttl, tx_hash, serialized_tx
 ):
     inputs = [cardano.create_input(i) for i in inputs]
     outputs = [cardano.create_output(o) for o in outputs]
 
-    expected_responses = [messages.PassphraseRequest()]
-    expected_responses += [
-        messages.CardanoTxRequest(tx_index=i) for i in range(len(transactions))
-    ]
-    expected_responses += [
+    expected_responses = [
+        messages.PassphraseRequest(),
         messages.ButtonRequest(code=messages.ButtonRequestType.Other),
         messages.ButtonRequest(code=messages.ButtonRequestType.Other),
         messages.CardanoSignedTx(),
@@ -141,8 +126,6 @@ def test_cardano_sign_tx(
     with client:
         client.set_expected_responses(expected_responses)
         client.set_input_flow(input_flow)
-        response = cardano.sign_tx(
-            client, inputs, outputs, transactions, protocol_magic
-        )
+        response = cardano.sign_tx(client, inputs, outputs, fee, ttl, protocol_magic)
         assert response.tx_hash.hex() == tx_hash
-        assert response.tx_body.hex() == tx_body
+        assert response.serialized_tx.hex() == serialized_tx
