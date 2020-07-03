@@ -9,6 +9,7 @@ from apps.cardano import CURVE, seed
 from apps.cardano.address import (
     derive_address_and_node,
     is_safe_output_address,
+    matches_with_protocol_magic,
     validate_full_path,
 )
 from apps.cardano.layout import confirm_sending, confirm_transaction
@@ -110,6 +111,9 @@ def _build_outputs(
                 )
             if not is_safe_output_address(address):
                 raise wire.ProcessError("Invalid output address!")
+
+            if not matches_with_protocol_magic(address, protocol_magic):
+                raise wire.ProcessError("Output address network mismatch!")
 
         total_amount += amount
         result.append((base58.decode(address), amount))

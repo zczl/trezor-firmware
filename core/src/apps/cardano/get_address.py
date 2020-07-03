@@ -12,7 +12,9 @@ async def get_address(ctx, msg, keychain: seed.Keychain):
     await paths.validate_path(ctx, validate_full_path, keychain, msg.address_n, CURVE)
 
     try:
-        address, _ = derive_address_and_node(keychain, msg.address_n)
+        address, _ = derive_address_and_node(
+            keychain, msg.address_n, msg.protocol_magic
+        )
     except ValueError as e:
         if __debug__:
             log.exception(__name__, e)

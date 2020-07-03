@@ -1,8 +1,14 @@
 from trezor import log
 from trezor.crypto import base58, crc, hashlib
 
+from apps.cardano.protocol_magics import ProtocolMagics
 from apps.common import HARDENED, cbor
 from apps.common.seed import remove_ed25519_prefix
+
+if False:
+    from typing import Tuple
+    from trezor.crypto import bip32
+    from apps.cardano import seed
 
 
 def _encode_address_raw(address_data_encoded):
@@ -13,11 +19,19 @@ def _encode_address_raw(address_data_encoded):
     )
 
 
-def derive_address_and_node(keychain, path: list):
+def derive_address_and_node(
+    keychain: seed.Keychain, path: list, protocol_magic: int
+) -> Tuple[str, bip32.Node]:
     node = keychain.derive(path)
 
-    address_payload = None
-    address_attributes = {}
+    # todo: GK - verify this is indeed correct (after IOHK confirmation/testnet support)
+    # protocol magic is included in Byron addresses only on testnets
+    if protocol_magic == ProtocolMagics.MAINNET:
+        address_attributes = {}
+        address_payload = None
+    else:
+        address_attributes = {2: cbor.encode(protocol_magic)}
+        address_payload = [address_attributes]
 
     address_root = _get_address_root(node, address_payload)
     address_type = 0
@@ -32,23 +46,56 @@ def is_safe_output_address(address) -> bool:
     Determines whether it is safe to include the address as-is as
     a tx output, preventing unintended side effects (e.g. CBOR injection)
     """
+    address_data_encoded = _get_address_data(address)
+    if address_data_encoded is None:
+        return False
+
+    return _encode_address_raw(address_data_encoded) == address
+
+
+def _get_address_data(address: str) -> bytes:
     try:
         address_hex = base58.decode(address)
         address_unpacked = cbor.decode(address_hex)
     except ValueError as e:
         if __debug__:
             log.exception(__name__, e)
-        return False
+        return None
 
     if not isinstance(address_unpacked, list) or len(address_unpacked) != 2:
-        return False
+        return None
 
     address_data_encoded = address_unpacked[0]
-
     if not isinstance(address_data_encoded, bytes):
+        return None
+
+    return address_data_encoded
+
+
+def matches_with_protocol_magic(address: str, protocol_magic: int) -> bool:
+    address_data_encoded = _get_address_data(address)
+    if address_data_encoded is None:
         return False
 
-    return _encode_address_raw(address_data_encoded) == address
+    address_data = cbor.decode(address_data_encoded)
+    if not isinstance(address_data, list) or len(address_data) < 2:
+        return False
+
+    address_attributes = address_data[1]
+
+    if len(address_attributes) == 0:
+        return protocol_magic == ProtocolMagics.MAINNET
+
+    if 2 not in address_attributes:
+        return False
+
+    protocol_magic_cbor = address_attributes[2]
+    address_protocol_magic = cbor.decode(protocol_magic_cbor)
+
+    if not isinstance(address_protocol_magic, int):
+        return False
+
+    return address_protocol_magic == protocol_magic
 
 
 def validate_full_path(path: list) -> bool:
