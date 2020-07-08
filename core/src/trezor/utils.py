@@ -37,12 +37,17 @@ if False:
         Sequence,
     )
 
+sysmodules = {}
+
 
 def unimport_begin() -> Iterable[str]:
     return set(sys.modules)
 
 
 def unimport_end(mods: Iterable[str]) -> None:
+    global sysmodules
+    sysmodules.clear()
+
     for mod in sys.modules:
         if mod not in mods:
             # remove reference from sys.modules
@@ -61,6 +66,7 @@ def unimport_end(mods: Iterable[str]) -> None:
                 pass
     # collect removed modules
     gc.collect()
+    sysmodules = sys.modules.copy()
 
     meminfo("dump.json")
 

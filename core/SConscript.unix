@@ -325,7 +325,7 @@ env.Replace(
     SIZE='size',
     STRIP='strip',
     OBJCOPY='objcopy',
-    COPT=os.getenv('OPTIMIZE', '-Os'), )
+    COPT=os.getenv('OPTIMIZE', '-Og'), )
 
 if ARGUMENTS.get('TREZOR_EMULATOR_ASAN', 0):
     asan_flags=(
