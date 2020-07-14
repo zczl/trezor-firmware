@@ -41,6 +41,16 @@ def derive_address_and_node(
     return (_encode_address_raw(address_data_encoded), node)
 
 
+def get_address_attributes(protocol_magic: int):
+    # protocol magic is included in Byron addresses only on testnets
+    if protocol_magic == ProtocolMagics.MAINNET:
+        address_attributes = {}
+    else:
+        address_attributes = {2: cbor.encode(protocol_magic)}
+
+    return address_attributes
+
+
 def is_safe_output_address(address) -> bool:
     """
     Determines whether it is safe to include the address as-is as

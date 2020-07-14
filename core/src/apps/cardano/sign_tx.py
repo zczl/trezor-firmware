@@ -8,6 +8,7 @@ from trezor.messages.CardanoSignedTx import CardanoSignedTx
 from apps.cardano import CURVE, seed
 from apps.cardano.address import (
     derive_address_and_node,
+    get_address_attributes,
     is_safe_output_address,
     matches_with_protocol_magic,
     validate_full_path,
@@ -62,8 +63,11 @@ def _serialize_tx(keychain: seed.Keychain, msg: CardanoSignTx) -> Tuple[bytes, b
     tx_body = _build_tx_body(keychain, msg)
     tx_hash = _hash_tx_body(tx_body)
 
-    witnesses_for_cbor = _build_witnesses(keychain, msg.inputs, tx_hash)
-    witnesses = {0: _detupleize(witnesses_for_cbor)}
+    witnesses_for_cbor = _build_witnesses(
+        keychain, msg.inputs, tx_hash, msg.protocol_magic
+    )
+    # byron witnesses have the key 2 in Shelley
+    witnesses = {2: _detupleize(witnesses_for_cbor)}
 
     serialized_tx = cbor.encode([tx_body, witnesses, None])
 
@@ -134,21 +138,26 @@ def _hash_tx_body(tx_body: Dict) -> bytes:
 
 
 def _build_witnesses(
-    keychain: seed.Keychain, inputs: List[CardanoTxInputType], tx_aux_hash: bytes
-) -> List[Tuple[bytes, bytes]]:
+    keychain: seed.Keychain,
+    inputs: List[CardanoTxInputType],
+    tx_body_hash: bytes,
+    protocol_magic: int,
+) -> List[Tuple[bytes, bytes, bytes, bytes, bytes]]:
     result = []
     for input in inputs:
         node = keychain.derive(input.address_n)
-        message = cbor.encode(tx_aux_hash)
-
-        signature = ed25519.sign_ext(
-            node.private_key(), node.private_key_ext(), message
-        )
 
         public_key = remove_ed25519_prefix(node.public_key())
+        signature = ed25519.sign_ext(
+            node.private_key(), node.private_key_ext(), tx_body_hash
+        )
+        chain_code = node.chain_code()
+        address_prefix = b"\x83\x00\x82\x00\x58\x40"
+        address_suffix = cbor.encode(get_address_attributes(protocol_magic))
 
-        # todo: GK - verify this works with Byron inputs (after IOHK confirmation/testnet support)
-        result.append((public_key, signature))
+        result.append(
+            (public_key, signature, chain_code, address_prefix, address_suffix)
+        )
 
     return result
 
