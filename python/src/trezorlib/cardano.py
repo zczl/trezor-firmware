@@ -19,7 +19,7 @@ from typing import List
 from . import messages, tools
 from .tools import expect
 
-PROTOCOL_MAGICS = {"mainnet": 0, "testnet": 42}
+PROTOCOL_MAGICS = {"mainnet": 764824073, "testnet": 42}
 
 REQUIRED_FIELDS_TRANSACTION = ("inputs", "outputs")
 REQUIRED_FIELDS_INPUT = ("path", "prev_hash", "prev_index")
