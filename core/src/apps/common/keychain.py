@@ -2,7 +2,7 @@ from storage import device
 from trezor import wire
 from trezor.crypto import bip32
 
-from . import HARDENED, paths
+from . import paths
 from .seed import Slip21Node, get_seed
 
 if False:
@@ -86,13 +86,13 @@ class Keychain:
         self,
         seed: bytes,
         curve: str,
-        namespaces: Sequence[paths.Bip32Path],
+        schemas: Sequence[paths.PathSchema],
         slip21_namespaces: Sequence[paths.Slip21Path] = (),
     ) -> None:
         self.seed = seed
         self.curve = curve
-        self.namespaces = namespaces
-        self.slip21_namespaces = slip21_namespaces
+        self.schemas = tuple(schemas)
+        self.slip21_namespaces = tuple(slip21_namespaces)
 
         self._cache = LRUCache(10)
 
@@ -108,10 +108,13 @@ class Keychain:
         if device.unsafe_prompts_allowed():
             return
 
-        if any(ns == path[: len(ns)] for ns in self.namespaces):
+        if self.is_in_keychain(path):
             return
 
         raise FORBIDDEN_KEY_PATH
+
+    def is_in_keychain(self, path: paths.Bip32Path) -> bool:
+        return any(schema.match(path) for schema in self.schemas)
 
     def _derive_with_cache(
         self, prefix_len: int, path: paths.PathType, new_root: Callable[[], NodeType],
@@ -155,24 +158,32 @@ class Keychain:
 async def get_keychain(
     ctx: wire.Context,
     curve: str,
-    namespaces: Sequence[paths.Bip32Path],
+    schemas: Sequence[paths.PathSchema],
     slip21_namespaces: Sequence[paths.Slip21Path] = (),
 ) -> Keychain:
     seed = await get_seed(ctx)
-    keychain = Keychain(seed, curve, namespaces, slip21_namespaces)
+    keychain = Keychain(seed, curve, schemas, slip21_namespaces)
     return keychain
 
 
 def with_slip44_keychain(
-    slip44: int, curve: str = "secp256k1", allow_testnet: bool = False
+    *patterns: str,
+    slip44_id: int,
+    curve: str = "secp256k1",
+    allow_testnet: bool = True,
 ) -> Callable[[HandlerWithKeychain[MsgIn, MsgOut]], Handler[MsgIn, MsgOut]]:
-    namespaces = [[44 | HARDENED, slip44 | HARDENED]]
-    if allow_testnet:
-        namespaces.append([44 | HARDENED, 1 | HARDENED])
+    if not patterns:
+        raise ValueError  # specify a pattern
+
+    schemas = []
+    for pattern in patterns:
+        schemas.append(paths.PathSchema(pattern=pattern, slip44_id=slip44_id))
+        if allow_testnet:
+            schemas.append(paths.PathSchema(pattern=pattern, slip44_id=1))
 
     def decorator(func: HandlerWithKeychain[MsgIn, MsgOut]) -> Handler[MsgIn, MsgOut]:
         async def wrapper(ctx: wire.Context, msg: MsgIn) -> MsgOut:
-            keychain = await get_keychain(ctx, curve, namespaces)
+            keychain = await get_keychain(ctx, curve, schemas)
             with keychain:
                 return await func(ctx, msg, keychain)
 
