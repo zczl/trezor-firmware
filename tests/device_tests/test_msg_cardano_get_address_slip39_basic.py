@@ -50,17 +50,17 @@ from ..common import MNEMONIC_SLIP39_BASIC_20_3of6
         (
             "m/44'/1815'/0'/0/0",
             PROTOCOL_MAGICS["testnet"],
-            "2657WMsDfac7PzZZyvdBSuUPhQJWs9hQUS1D1ct5MjnrqfHfPQsJ8PEBf5UjSiDUS",
+            "2657WMsDfac7SH1rhA2PWBggGAPrKyLt1r9SL9gajPxxcH15ZxuCUb4aK9mQ9w7dU",
         ),
         (
             "m/44'/1815'/0'/0/1",
             PROTOCOL_MAGICS["testnet"],
-            "2657WMsDfac6abLDWBcP1pEjabr7TbMJsr8E8hmHiohMynv4eAQdQj52BivuJcTbK",
+            "2657WMsDfac6Cmfg4Varph2qyLKGi2K9E8jrtvjHVzfSjmbTMGy5sY3HpxCKsmtDA",
         ),
         (
             "m/44'/1815'/0'/0/2",
             PROTOCOL_MAGICS["testnet"],
-            "2657WMsDfac5yR94mmXscjwV457oumREPmNSP1S5Z9rRdVDYfGuht7HMS5EQEKtKL",
+            "2657WMsDfac5ANb5Mw6Rbgdz6nvs2Tu675vGbbVSzXQbAkQuMWtqBvEeKTrHNtXY7",
         ),
     ],
 )

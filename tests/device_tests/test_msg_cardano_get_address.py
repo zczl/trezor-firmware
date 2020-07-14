@@ -49,17 +49,17 @@ from ..common import MNEMONIC12
         (
             "m/44'/1815'/0'/0/0",
             PROTOCOL_MAGICS["testnet"],
-            "2657WMsDfac5UggijVFxgu3hEYKAPBhwQsk2HoPAafMXkgZ6uaPgDmiJeubghAQVe",
+            "2657WMsDfac5vydkak9a7BqGrsLqBzB7K3vT55rucZKYDmVnUCf6hXAFkZSTcUx7r",
         ),
         (
             "m/44'/1815'/0'/0/1",
             PROTOCOL_MAGICS["testnet"],
-            "2657WMsDfac63WQoMHafvPofvN3dKV3EpyabFanTRekzpBJo9dcFpYBkjGeFyUQzf",
+            "2657WMsDfac61ebUDw53WUX49Dcfya8S8G7iYbhN4nP8JSFuh38T1LuFax1bUnhxA",
         ),
         (
             "m/44'/1815'/0'/0/2",
             PROTOCOL_MAGICS["testnet"],
-            "2657WMsDfac7RgcCQASPeUNUSGkXkaHicG5H7WZTQRSWRdsdC83RcNy24fKWSK3NL",
+            "2657WMsDfac5PMpEsxc1md3pgZKUZRZ11MUK8tjkDHBQG9b3TMBsTQc4PmmumVrcn",
         ),
     ],
 )

@@ -171,14 +171,6 @@ class TestCardanoAddress(unittest.TestCase):
         for path in correct_derivation_paths:
             self.assertTrue(validate_full_path(path))
 
-    def test_get_address_root_scheme(self):
-        mnemonic = "all all all all all all all all all all all all"
-        passphrase = ""
-        root_node = bip32.from_mnemonic_cardano(mnemonic, passphrase)
-
-        address_root = _get_address_root(root_node, {1: b'X\x1cr,zu\x81?\xaf\xde\x9f\xf9\xe4\xd4\x90\xadH$\xe9\xf3\x88\x16\xcb\xd2)\x02M\x0c#\xde'})
-        self.assertEqual(address_root, b'\xb3\xbbS\xa8;uN:E=\xe8\xe5\x9c\x18\xbcn\xcf\xd0c\xba\x0e\xba\xaelL}\xba\xbb')
-
     def test_slip39_128(self):
         mnemonics = [
             "extra extend academic bishop cricket bundle tofu goat apart victim "
@@ -316,9 +308,9 @@ class TestCardanoAddress(unittest.TestCase):
         keychain = Keychain(node)
 
         addresses = [
-            "2657WMsDfac6UJfdDkU3ZZ7UorsdvDA1bGGMcTBEvjzS5aZXSp1kdeGp4XXJWiJLD",
-            "2657WMsDfac6ZkkLpCdrgDjcnnr9qCBYVdUtJbvUVdsL2VCu5fcxgHkk982H2xMuR",
-            "2657WMsDfac5jcLLi4ashkQmgKXKTsH4DZX8PiJMYpdA69zMVdwdzRc1jxQxb4CJQ",
+            "2657WMsDfac5F3zbgs9BwNWx3dhGAJERkAL93gPa68NJ2i8mbCHm2pLUHWSj8Mfea",
+            "2657WMsDfac6ezKWszxLFqJjSUgpg9NgxKc1koqi24sVpRaPhiwMaExk4useKn5HA",
+            "2657WMsDfac7hr1ioJGr6g7r6JRx4r1My8Rj91tcPTeVjJDpfBYKURrPG2zVLx2Sq",
         ]
 
         for i, expected in enumerate(addresses):
