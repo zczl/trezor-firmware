@@ -11,7 +11,7 @@ if False:
     from apps.cardano import seed
 
 
-def _encode_address_raw(address_data_encoded):
+def _encode_address_raw(address_data_encoded: bytes) -> str:
     return base58.encode(
         cbor.encode(
             [cbor.Tagged(24, address_data_encoded), crc.crc32(address_data_encoded)]
@@ -24,16 +24,9 @@ def derive_address_and_node(
 ) -> Tuple[str, bip32.Node]:
     node = keychain.derive(path)
 
-    # todo: GK - verify this is indeed correct (after IOHK confirmation/testnet support)
-    # protocol magic is included in Byron addresses only on testnets
-    if protocol_magic == ProtocolMagics.MAINNET:
-        address_attributes = {}
-        address_payload = None
-    else:
-        address_attributes = {2: cbor.encode(protocol_magic)}
-        address_payload = [address_attributes]
+    address_attributes = get_address_attributes(protocol_magic)
 
-    address_root = _get_address_root(node, address_payload)
+    address_root = _get_address_root(node, address_attributes)
     address_type = 0
     address_data = [address_root, address_attributes, address_type]
     address_data_encoded = cbor.encode(address_data)
@@ -41,7 +34,7 @@ def derive_address_and_node(
     return (_encode_address_raw(address_data_encoded), node)
 
 
-def get_address_attributes(protocol_magic: int):
+def get_address_attributes(protocol_magic: int) -> dict:
     # protocol magic is included in Byron addresses only on testnets
     if protocol_magic == ProtocolMagics.MAINNET:
         address_attributes = {}
@@ -51,7 +44,7 @@ def get_address_attributes(protocol_magic: int):
     return address_attributes
 
 
-def is_safe_output_address(address) -> bool:
+def is_safe_output_address(address: str) -> bool:
     """
     Determines whether it is safe to include the address as-is as
     a tx output, preventing unintended side effects (e.g. CBOR injection)
@@ -131,17 +124,13 @@ def validate_full_path(path: list) -> bool:
     return True
 
 
-def _address_hash(data) -> bytes:
-    data = cbor.encode(data)
-    data = hashlib.sha3_256(data).digest()
-    res = hashlib.blake2b(data=data, outlen=28).digest()
+def _address_hash(data: list) -> bytes:
+    cbor_data = cbor.encode(data)
+    sha_data_hash = hashlib.sha3_256(cbor_data).digest()
+    res = hashlib.blake2b(data=sha_data_hash, outlen=28).digest()
     return res
 
 
-def _get_address_root(node, payload):
+def _get_address_root(node: bip32.Node, address_attributes: dict) -> bytes:
     extpubkey = remove_ed25519_prefix(node.public_key()) + node.chain_code()
-    if payload:
-        payload = {1: cbor.encode(payload)}
-    else:
-        payload = {}
-    return _address_hash([0, [0, extpubkey], payload])
+    return _address_hash([0, [0, extpubkey], address_attributes])
