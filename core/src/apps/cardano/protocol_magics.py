@@ -1,6 +1,5 @@
 class ProtocolMagics:
-    # todo: GK - set mainnet protocol magic (we don't know this value yet)
-    MAINNET = 0
+    MAINNET = 764824073
     TESTNET = 42
 
     @classmethod
