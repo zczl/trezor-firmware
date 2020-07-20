@@ -40,8 +40,8 @@ before_script:
 
 include:
   - ci/environment.yml
-  - ci/prebuild.yml
+#  - ci/prebuild.yml
   - ci/build.yml
-  - ci/test.yml
-  - ci/posttest.yml
-  - ci/deploy.yml
+#  - ci/test.yml
+#  - ci/posttest.yml
+#  - ci/deploy.yml
