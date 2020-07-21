@@ -36,8 +36,4 @@ stdenv.mkDerivation {
   ];
   LD_LIBRARY_PATH="${libusb1}/lib";
   NIX_ENFORCE_PURITY = 0;
-  shellHook = ''
-    pipenv shell
-    exit
-  '';
 }
