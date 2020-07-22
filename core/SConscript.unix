@@ -356,6 +356,7 @@ env.Replace(
     LIBS=['m'],
     CPPPATH=[
         '.',
+        'embed/rust',
         'embed/unix',
         'embed/extmod/modtrezorui',
         'vendor/micropython',
@@ -566,4 +567,4 @@ if EVERYTHING:
 program = env.Command(
     target='micropython',
     source=obj_program,
-    action='$CC -o $TARGET $SOURCES $_LIBDIRFLAGS $_LIBFLAGS $LINKFLAGS', )
+    action='$CC -o $TARGET $SOURCES $_LIBDIRFLAGS $_LIBFLAGS $LINKFLAGS -Lembed/rust/target/release -lrust', )
