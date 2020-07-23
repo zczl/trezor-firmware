@@ -10,10 +10,9 @@ from apps.base import set_authorization
 from apps.common.confirm import require_confirm, require_hold_to_confirm
 from apps.common.paths import validate_path
 
-from . import addresses
 from .authorization import FEE_PER_ANONYMITY_DECIMALS, CoinJoinAuthorization
 from .common import BIP32_WALLET_DEPTH
-from .keychain import get_keychain_for_coin
+from .keychain import get_keychain_for_coin, validate_input_script_type
 
 if False:
     from trezor import wire
@@ -21,7 +20,7 @@ if False:
 _MAX_COORDINATOR_LEN = const(18)
 
 
-async def authorize_coinjoin(ctx: wire.Context, msg: AuthorizeCoinJoin,) -> Success:
+async def authorize_coinjoin(ctx: wire.Context, msg: AuthorizeCoinJoin) -> Success:
     # We cannot use the @with_keychain decorator here, because we need the keychain
     # to survive the function exit. The ownership of the keychain is transferred to
     # the CoinJoinAuthorization object, which takes care of its destruction.
@@ -38,12 +37,9 @@ async def authorize_coinjoin(ctx: wire.Context, msg: AuthorizeCoinJoin,) -> Succ
 
         await validate_path(
             ctx,
-            addresses.validate_full_path,
             keychain,
             msg.address_n + [0] * BIP32_WALLET_DEPTH,
-            coin.curve_name,
-            coin=coin,
-            script_type=msg.script_type,
+            validate_input_script_type(coin, msg),
         )
 
         text = Text("Authorize CoinJoin", ui.ICON_RECOVERY)

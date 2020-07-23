@@ -6,7 +6,7 @@ from apps.common import coininfo
 from apps.common.paths import validate_path
 
 from . import addresses, common, scripts
-from .keychain import with_keychain
+from .keychain import validate_input_script_type, with_keychain
 from .ownership import get_identifier
 
 if False:
@@ -18,13 +18,7 @@ async def get_ownership_id(
     ctx, msg: GetOwnershipId, keychain: Keychain, coin: coininfo.CoinInfo
 ) -> OwnershipId:
     await validate_path(
-        ctx,
-        addresses.validate_full_path,
-        keychain,
-        msg.address_n,
-        coin.curve_name,
-        coin=coin,
-        script_type=msg.script_type,
+        ctx, keychain, msg.address_n, validate_input_script_type(coin, msg)
     )
 
     if msg.script_type not in common.INTERNAL_INPUT_SCRIPT_TYPES:

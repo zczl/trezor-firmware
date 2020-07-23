@@ -7,7 +7,7 @@ from trezor.messages.TxOutputType import TxOutputType
 
 from apps.common import coininfo
 
-from .. import addresses
+from .. import keychain
 from ..authorization import FEE_PER_ANONYMITY_DECIMALS
 from . import helpers, tx_weight
 
@@ -64,7 +64,7 @@ class BasicApprover(Approver):
         self.change_count = 0  # the number of change-outputs
 
     async def add_internal_input(self, txi: TxInputType, amount: int) -> None:
-        if not addresses.validate_full_path(txi.address_n, self.coin, txi.script_type):
+        if not keychain.validate_input_script_type(self.coin, txi):
             await helpers.confirm_foreign_address(txi.address_n)
 
         await super().add_internal_input(txi, amount)
