@@ -1,5 +1,5 @@
 {
-  "label": "GitHub",
+  "label": "github.com",
   "u2f": ["70617dfed065863af47c15556c91798880828cc407fdf70ae85011569465a075"],
   "webauthn": ["github.com"],
   "use_sign_count": true
