@@ -8,7 +8,7 @@ if False:
 
 _RESIDENT_CREDENTIAL_START_KEY = const(1)
 
-MAX_RESIDENT_CREDENTIALS = const(100)
+MAX_RESIDENT_CREDENTIALS = const(10)
 
 
 def get(index: int) -> Optional[bytes]:

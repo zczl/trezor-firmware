@@ -22,7 +22,7 @@ from trezorlib.exceptions import Cancelled, TrezorFailure
 from ..common import MNEMONIC12
 from .data_webauthn import CRED1, CRED2, CRED3, CREDS
 
-RK_CAPACITY = 100
+RK_CAPACITY = 10
 
 
 @pytest.mark.skip_t1
