@@ -6,7 +6,7 @@ release core fw regular deploy:
   stage: deploy
   variables:
     DEPLOY_DIRECTORY: "releases/firmwares"
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["core fw regular build"]
   script:
     - export VERSION=$(./tools/version.sh core/embed/firmware/version.h)
@@ -25,7 +25,7 @@ release core fw btconly deploy:
   stage: deploy
   variables:
     DEPLOY_DIRECTORY: "releases/firmwares"
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["core fw btconly build"]
   script:
     - export VERSION=$(./tools/version.sh core/embed/firmware/version.h)
@@ -44,7 +44,7 @@ release legacy fw regular deploy:
   stage: deploy
   variables:
     DEPLOY_DIRECTORY: "releases/firmwares"
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["legacy fw regular build"]
   script:
     - export VERSION=$(./tools/version.sh legacy/firmware/version.h)
@@ -63,7 +63,7 @@ release legacy fw btconly deploy:
   stage: deploy
   variables:
     DEPLOY_DIRECTORY: "releases/firmwares"
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["legacy fw btconly build"]
   script:
     - export VERSION=$(./tools/version.sh legacy/firmware/version.h)
@@ -82,7 +82,7 @@ release core fw regular debug deploy:
   stage: deploy
   variables:
     DEPLOY_DIRECTORY: "releases/firmwares"
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["core fw regular debug build"]
   script:
     - export VERSION=$(./tools/version.sh core/embed/firmware/version.h)
@@ -101,7 +101,7 @@ release legacy fw regular debug deploy:
   stage: deploy
   variables:
     DEPLOY_DIRECTORY: "releases/firmwares"
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["legacy fw regular debug build"]
   script:
     - export VERSION=$(./tools/version.sh legacy/firmware/version.h)
@@ -120,7 +120,7 @@ release legacy fw btconly debug deploy:
   stage: deploy
   variables:
     DEPLOY_DIRECTORY: "releases/firmwares"
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["legacy fw btconly debug build"]
   script:
     - export VERSION=$(./tools/version.sh legacy/firmware/version.h)
@@ -140,7 +140,7 @@ release legacy fw btconly debug deploy:
 
 rc core fw regular deploy:
   stage: deploy
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["core fw regular build"]
   script:
     - export DEPLOY_DIRECTORY="release_candidates/${CI_COMMIT_REF_NAME:8}/firmwares"  # stripping 'release/'
@@ -156,7 +156,7 @@ rc core fw regular deploy:
 
 rc core fw btconly deploy:
   stage: deploy
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["core fw btconly build"]
   script:
     - export DEPLOY_DIRECTORY="release_candidates/${CI_COMMIT_REF_NAME:8}/firmwares"  # stripping 'release/'
@@ -172,7 +172,7 @@ rc core fw btconly deploy:
 
 rc legacy fw regular deploy:
   stage: deploy
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["legacy fw regular build"]
   script:
     - export DEPLOY_DIRECTORY="release_candidates/${CI_COMMIT_REF_NAME:8}/firmwares"  # stripping 'release/'
@@ -188,7 +188,7 @@ rc legacy fw regular deploy:
 
 rc legacy fw btconly deploy:
   stage: deploy
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["legacy fw btconly build"]
   script:
     - export DEPLOY_DIRECTORY="release_candidates/${CI_COMMIT_REF_NAME:8}/firmwares"  # stripping 'release/'
@@ -208,7 +208,7 @@ upgrade tests core deploy:
   stage: deploy
   variables:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/upgrade_tests"
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["core unix frozen debug build"]
   script:
     - TAG=`git tag --points-at HEAD | grep "core" | sed "s/\//-/"`
@@ -227,7 +227,7 @@ upgrade tests legacy deploy:
   stage: deploy
   variables:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/upgrade_tests"
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["legacy emu regular build"]
   script:
     - TAG=`git tag --points-at HEAD | grep "legacy" | sed "s/\//-/"`
@@ -248,7 +248,7 @@ ui tests core fixtures deploy:
   stage: deploy
   variables:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/ui_tests/"
-  before_script: []  # no pipenv
+  before_script: []  # no poetry
   needs: ["core device ui test"]
   script:
     - echo "Deploying to $DEPLOY_PATH"
