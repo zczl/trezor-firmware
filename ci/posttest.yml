@@ -2,6 +2,8 @@ image: registry.gitlab.com/satoshilabs/trezor/trezor-firmware/trezor-firmware-en
 
 core unix coverage posttest:
   stage: posttest
+  variables:
+    COVERAGE_THRESHOLD: "78"
   dependencies:
     - core device test
     - core monero test
@@ -10,7 +12,7 @@ core unix coverage posttest:
   script:
     - nix-shell --run "pipenv run make -C core res"  # we need to regenerate resources.py
     - nix-shell --run "pipenv run make -C core coverage"
-  coverage: '/>\d+%</'
+  coverage: '/COVERAGE: \d+%/'
   artifacts:
     name: core-unix-coverage-posttest
     paths:
