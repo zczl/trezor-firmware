@@ -5,16 +5,14 @@ from apps.common import paths
 from apps.common.keychain import Keychain, with_slip44_keychain
 from apps.common.layout import address_n_to_str, show_address, show_qr
 
-from . import CURVE, SLIP44_ID, helpers
+from . import CURVE, PATTERN, SLIP44_ID, helpers
 
 
-@with_slip44_keychain(SLIP44_ID, CURVE, allow_testnet=True)
+@with_slip44_keychain(PATTERN, slip44_id=SLIP44_ID, curve=CURVE)
 async def get_address(ctx, msg: BinanceGetAddress, keychain: Keychain):
     HRP = "bnb"
 
-    await paths.validate_path(
-        ctx, helpers.validate_full_path, keychain, msg.address_n, CURVE
-    )
+    await paths.validate_path(ctx, keychain, msg.address_n)
 
     node = keychain.derive(msg.address_n)
     pubkey = node.public_key()

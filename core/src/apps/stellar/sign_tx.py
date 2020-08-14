@@ -10,15 +10,13 @@ from trezor.wire import ProcessError
 from apps.common import paths, seed
 from apps.common.keychain import with_slip44_keychain
 
-from . import CURVE, SLIP44_ID, consts, helpers, layout, writers
+from . import CURVE, PATTERN, SLIP44_ID, consts, helpers, layout, writers
 from .operations import process_operation
 
 
-@with_slip44_keychain(SLIP44_ID, CURVE, allow_testnet=True)
+@with_slip44_keychain(PATTERN, slip44_id=SLIP44_ID, curve=CURVE)
 async def sign_tx(ctx, msg: StellarSignTx, keychain):
-    await paths.validate_path(
-        ctx, helpers.validate_full_path, keychain, msg.address_n, CURVE
-    )
+    await paths.validate_path(ctx, keychain, msg.address_n)
 
     node = keychain.derive(msg.address_n)
     pubkey = seed.remove_ed25519_prefix(node.public_key())

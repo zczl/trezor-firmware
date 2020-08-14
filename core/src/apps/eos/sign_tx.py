@@ -10,13 +10,13 @@ from trezor.utils import HashWriter
 from apps.common import paths
 from apps.common.keychain import Keychain, with_slip44_keychain
 
-from . import CURVE, SLIP44_ID, writers
+from . import CURVE, PATTERN, SLIP44_ID, writers
 from .actions import process_action
-from .helpers import base58_encode, validate_full_path
+from .helpers import base58_encode
 from .layout import require_sign_tx
 
 
-@with_slip44_keychain(SLIP44_ID, CURVE)
+@with_slip44_keychain(PATTERN, slip44_id=SLIP44_ID, curve=CURVE)
 async def sign_tx(ctx: wire.Context, msg: EosSignTx, keychain: Keychain) -> EosSignedTx:
     if msg.chain_id is None:
         raise wire.DataError("No chain id")
@@ -25,7 +25,7 @@ async def sign_tx(ctx: wire.Context, msg: EosSignTx, keychain: Keychain) -> EosS
     if msg.num_actions is None or msg.num_actions == 0:
         raise wire.DataError("No actions")
 
-    await paths.validate_path(ctx, validate_full_path, keychain, msg.address_n, CURVE)
+    await paths.validate_path(ctx, keychain, msg.address_n)
 
     node = keychain.derive(msg.address_n)
     sha = HashWriter(sha256())

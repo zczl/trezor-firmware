@@ -8,17 +8,14 @@ from trezor.wire import ProcessError
 from apps.common import paths
 from apps.common.keychain import with_slip44_keychain
 
-from . import CURVE, SLIP44_ID, helpers, layout
+from . import CURVE, PATTERN, SLIP44_ID, helpers, layout
 from .serialize import serialize
 
 
-@with_slip44_keychain(SLIP44_ID, CURVE, allow_testnet=True)
+@with_slip44_keychain(PATTERN, slip44_id=SLIP44_ID, curve=CURVE)
 async def sign_tx(ctx, msg: RippleSignTx, keychain):
     validate(msg)
-
-    await paths.validate_path(
-        ctx, helpers.validate_full_path, keychain, msg.address_n, CURVE
-    )
+    await paths.validate_path(ctx, keychain, msg.address_n)
 
     node = keychain.derive(msg.address_n)
     source_address = helpers.address_from_public_key(node.public_key())

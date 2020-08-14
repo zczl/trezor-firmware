@@ -6,10 +6,11 @@ from trezor.ui.text import Text
 
 from apps.common.confirm import require_confirm
 from apps.common.keychain import get_keychain
+from apps.common.paths import SCHEMA_ANY_PATH
 
 
 async def cipher_key_value(ctx, msg):
-    keychain = await get_keychain(ctx, "secp256k1", [[]])
+    keychain = await get_keychain(ctx, "secp256k1", [SCHEMA_ANY_PATH])
 
     if len(msg.value) % 16 > 0:
         raise wire.DataError("Value length must be a multiple of 16")

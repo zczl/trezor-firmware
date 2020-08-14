@@ -3,16 +3,14 @@ from trezor.messages.MoneroWatchKey import MoneroWatchKey
 
 from apps.common import paths
 from apps.common.keychain import with_slip44_keychain
-from apps.monero import CURVE, SLIP44_ID, misc
+from apps.monero import CURVE, PATTERN, SLIP44_ID, misc
 from apps.monero.layout import confirms
 from apps.monero.xmr import crypto
 
 
-@with_slip44_keychain(SLIP44_ID, CURVE, allow_testnet=True)
+@with_slip44_keychain(PATTERN, slip44_id=SLIP44_ID, curve=CURVE)
 async def get_watch_only(ctx, msg: MoneroGetWatchKey, keychain):
-    await paths.validate_path(
-        ctx, misc.validate_full_path, keychain, msg.address_n, CURVE
-    )
+    await paths.validate_path(ctx, keychain, msg.address_n)
 
     await confirms.require_confirm_watchkey(ctx)
 

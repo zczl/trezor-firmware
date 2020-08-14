@@ -12,13 +12,13 @@ from trezor.messages.MoneroKeyImageSyncStepRequest import MoneroKeyImageSyncStep
 
 from apps.common import paths
 from apps.common.keychain import with_slip44_keychain
-from apps.monero import CURVE, SLIP44_ID, misc
+from apps.monero import CURVE, PATTERN, SLIP44_ID, misc
 from apps.monero.layout import confirms
 from apps.monero.xmr import crypto, key_image, monero
 from apps.monero.xmr.crypto import chacha_poly
 
 
-@with_slip44_keychain(SLIP44_ID, CURVE, allow_testnet=True)
+@with_slip44_keychain(PATTERN, slip44_id=SLIP44_ID, curve=CURVE)
 async def key_image_sync(ctx, msg, keychain):
     state = KeyImageSync()
 
@@ -45,9 +45,7 @@ class KeyImageSync:
 
 
 async def _init_step(s, ctx, msg, keychain):
-    await paths.validate_path(
-        ctx, misc.validate_full_path, keychain, msg.address_n, CURVE
-    )
+    await paths.validate_path(ctx, keychain, msg.address_n)
 
     s.creds = misc.get_creds(keychain, msg.address_n, msg.network_type)
 

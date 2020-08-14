@@ -3,13 +3,12 @@ from trezor.messages.LiskPublicKey import LiskPublicKey
 from apps.common import layout, paths
 from apps.common.keychain import with_slip44_keychain
 
-from . import CURVE, SLIP44_ID
-from .helpers import validate_full_path
+from . import CURVE, PATTERN, SLIP44_ID
 
 
-@with_slip44_keychain(SLIP44_ID, CURVE, allow_testnet=True)
+@with_slip44_keychain(PATTERN, slip44_id=SLIP44_ID, curve=CURVE)
 async def get_public_key(ctx, msg, keychain):
-    await paths.validate_path(ctx, validate_full_path, keychain, msg.address_n, CURVE)
+    await paths.validate_path(ctx, keychain, msg.address_n)
 
     node = keychain.derive(msg.address_n)
     pubkey = node.public_key()
