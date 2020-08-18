@@ -3,7 +3,7 @@ image: registry.gitlab.com/satoshilabs/trezor/trezor-firmware/trezor-firmware-en
 core unix coverage posttest:
   stage: posttest
   variables:
-    COVERAGE_THRESHOLD: "78"
+    COVERAGE_THRESHOLD: "85"
   dependencies:
     - core device test
     - core monero test
