@@ -127,7 +127,8 @@ core macos frozen regular build:
     - export NAME="trezor-emu-core-darwin"
     - cp -v core/build/unix/trezor-emu-core ./$NAME
     - chmod +x $NAME
-    - echo "\$BASH_SOURCE/../$NAME" > run.command
+    - dirname /home/tsusanka/Downloads
+    - echo "\$(dirname \$BASH_SOURCE)/trezor-emu-core-darwin" > run.command
     - chmod u+x run.command
   allow_failure: true
   artifacts:
