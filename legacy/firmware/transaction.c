@@ -463,6 +463,19 @@ uint32_t serialize_script_multisig(const CoinInfo *coin,
 }
 
 // tx methods
+void tx_input_check_hash(Hasher *hasher, const TxInputType *input) {
+  hasher_Update(hasher, input->prev_hash.bytes, 32);
+  hasher_Update(hasher, (const uint8_t *)&input->prev_index, 4);
+  hasher_Update(hasher, (const uint8_t *)&input->script_type,
+                sizeof(input->script_type));
+  hasher_Update(hasher, (const uint8_t *)&input->address_n_count,
+                sizeof(input->address_n_count));
+  for (int i = 0; i < input->address_n_count; ++i)
+    hasher_Update(hasher, (const uint8_t *)&input->address_n[i], 4);
+  hasher_Update(hasher, (const uint8_t *)&input->sequence, 4);
+  hasher_Update(hasher, (const uint8_t *)&input->amount, 8);
+  return;
+}
 
 uint32_t tx_prevout_hash(Hasher *hasher, const TxInputType *input) {
   for (int i = 0; i < 32; i++) {
@@ -634,7 +647,11 @@ uint32_t tx_serialize_decred_witness(TxStruct *tx, const TxInputType *input,
   if (tx->have_inputs == 0) {
     r += ser_length(tx->inputs_len, out + r);
   }
-  memcpy(out + r, &amount, 8);
+  if (input->has_amount) {
+    memcpy(out + r, &input->amount, 8);
+  } else {
+    memcpy(out + r, &amount, 8);
+  }
   r += 8;
   memcpy(out + r, &block_height, 4);
   r += 4;
