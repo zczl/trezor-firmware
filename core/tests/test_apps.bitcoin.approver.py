@@ -103,7 +103,7 @@ class TestApprover(unittest.TestCase):
             if txi.script_type == InputScriptType.EXTERNAL:
                 approver.add_external_input(txi)
             else:
-                await_result(approver.add_internal_input(txi, txi.amount))
+                await_result(approver.add_internal_input(txi))
 
         for txo in outputs:
             if txo.address_n:
@@ -125,7 +125,7 @@ class TestApprover(unittest.TestCase):
         )
 
         with self.assertRaises(wire.ProcessError):
-            await_result(approver.add_internal_input(txi, txi.amount))
+            await_result(approver.add_internal_input(txi))
 
     def test_coinjoin_input_account_path_mismatch(self):
         authorization = CoinJoinAuthorization(self.msg_auth, None, self.coin)
@@ -139,7 +139,7 @@ class TestApprover(unittest.TestCase):
         )
 
         with self.assertRaises(wire.ProcessError):
-            await_result(approver.add_internal_input(txi, txi.amount))
+            await_result(approver.add_internal_input(txi))
 
 
 if __name__ == '__main__':
