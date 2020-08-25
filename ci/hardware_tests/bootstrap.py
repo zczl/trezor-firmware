@@ -2,19 +2,32 @@ import configparser
 import sys
 
 from device.t1 import TrezorOne
+from device.tt import TrezorT
 
 
-def main(file: str = None):
+def main(model: str, file: str = None, reboot: bool = False):
     config = configparser.ConfigParser()
     config.read_file(open("hardware.cfg"))
-    t1 = TrezorOne(
-        config["t1"]["location"], config["t1"]["port"], config["t1"]["arduino_serial"],
+    if model == "t1":
+        model = TrezorOne
+        port = config["t1"]["port"]
+    elif model == "tt":
+        model = TrezorT
+        port = config["tt"]["port"]
+    else:
+        raise ValueError("Unknown Trezor model.")
+
+    device = model(
+        config["uhub"]["location"],
+        config["uhub"]["arduino_serial"],
+        port,
     )
-    t1.update_firmware(file)
+    device.update_firmware(file)
 
 
 if __name__ == "__main__":
-    file = None
-    if len(sys.argv) == 2:
-        file = sys.argv[1]
-    main(file)
+    model = sys.argv[1]
+    if len(sys.argv) == 3:
+        main(model, file=sys.argv[2])
+    else:
+        main(model)
