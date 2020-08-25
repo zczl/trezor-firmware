@@ -1,28 +1,65 @@
 import configparser
-import sys
+import sys, os, time
 
 from device.t1 import TrezorOne
 from device.tt import TrezorT
 
 
-def main(model: str, file: str = None, reboot: bool = False):
+def main(model: str, file: str = None):
     config = configparser.ConfigParser()
     config.read_file(open("hardware.cfg"))
+
+    t1 = TrezorOne(
+        config["uhub"]["location"],
+        config["uhub"]["arduino_serial"],
+        config["t1"]["port"],
+    )
+    tt = TrezorT(
+        config["uhub"]["location"],
+        config["uhub"]["arduino_serial"],
+        config["tt"]["port"],
+    )
+
+    print("Turning off everything")
+    turn_off_everything(config["uhub"]["location"])
+
     if model == "t1":
-        model = TrezorOne
-        port = config["t1"]["port"]
+        print("Starting T1")
+        turn_on_arduino(config["uhub"]["location"], '4')
+        # t1.power_on()
+        # t1.update_firmware(file)
     elif model == "tt":
-        model = TrezorT
-        port = config["tt"]["port"]
+        print("Starting TT")
+        tt.power_on()
+        tt.update_firmware(file)
     else:
         raise ValueError("Unknown Trezor model.")
 
-    device = model(
-        config["uhub"]["location"],
-        config["uhub"]["arduino_serial"],
-        port,
+
+def turn_on_arduino(uhub_location: str, port: str):
+    print("Xuhubctl -l {} -p {} -r 100 -a on".format(
+            uhub_location, port
+        ))
+    os.system(
+        "uhubctl -l {} -p {} -r 100 -a cycle".format(
+            uhub_location, port
+        )
     )
-    device.update_firmware(file)
+    time.sleep(3)
+
+
+def turn_off_everything(uhub_location: str):
+    for p in range(5, 1, -1):
+        print("uhubctl -l {} -p {} -r 100 -a off".format(
+                uhub_location, p
+            )
+        )
+        os.system(
+            "uhubctl -l {} -p {} -r 100 -a off".format(
+                uhub_location, p
+            )
+        )
+        time.sleep(10)
 
 
 if __name__ == "__main__":

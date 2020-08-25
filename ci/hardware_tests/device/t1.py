@@ -10,6 +10,7 @@ class TrezorOne(Device):
         self.serial.write(("{} {}\n".format(location, action)).encode())
 
     def update_firmware(self, file=None):
+        print("AAT1")
         if file:
             unofficial = True
             trezorctlcmd = "firmware-update -s -f {} &".format(file)

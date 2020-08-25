@@ -38,6 +38,9 @@ class Device:
     def power_off(self):
         self.now()
         print("[hardware/usb] Turning power off...")
+        print("uhubctl -l {} -p {} -r 100 -a off > /dev/null".format(
+                self.uhub_location, self.device_port
+            ))
         os.system(
             "uhubctl -l {} -p {} -r 100 -a off > /dev/null".format(
                 self.uhub_location, self.device_port
