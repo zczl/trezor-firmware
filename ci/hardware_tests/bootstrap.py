@@ -25,9 +25,9 @@ def main(model: str, file: str = None):
 
     if model == "t1":
         print("Starting T1")
-        turn_on_arduino(config["uhub"]["location"], '4')
-        # t1.power_on()
-        # t1.update_firmware(file)
+        t1.turn_on_arduino()
+        t1.power_on()
+        t1.update_firmware(file)
     elif model == "tt":
         print("Starting TT")
         tt.power_on()
@@ -36,30 +36,13 @@ def main(model: str, file: str = None):
         raise ValueError("Unknown Trezor model.")
 
 
-def turn_on_arduino(uhub_location: str, port: str):
-    print("Xuhubctl -l {} -p {} -r 100 -a on".format(
-            uhub_location, port
-        ))
-    os.system(
-        "uhubctl -l {} -p {} -r 100 -a cycle".format(
-            uhub_location, port
-        )
-    )
-    time.sleep(3)
-
-
 def turn_off_everything(uhub_location: str):
-    for p in range(5, 1, -1):
-        print("uhubctl -l {} -p {} -r 100 -a off".format(
-                uhub_location, p
-            )
-        )
+    for p in range(1, 5):
         os.system(
             "uhubctl -l {} -p {} -r 100 -a off".format(
                 uhub_location, p
             )
         )
-        time.sleep(10)
 
 
 if __name__ == "__main__":
