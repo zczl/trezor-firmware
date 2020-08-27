@@ -41,8 +41,6 @@ xxx:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/releases/emulators"
   before_script: []  # no pipenv
   script:
-    - rm -rf ${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-core-v2.3.2
-    - rm -rf ${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-legacy-v1.9.2
-    - rsync --delete -va "core/trezor-emu-legacy-v1.9.2-63ebb8cc" "${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-legacy-v1.9.2-63ebb8cc"
+    - mkdir ${DEPLOY_BASE_DIR}/releases/emulators/macos/
   tags:
     - deploy
