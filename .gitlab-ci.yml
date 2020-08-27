@@ -64,9 +64,9 @@ before_script:
       - Pipfile.lock
 
 include:
-  - ci/environment.yml
+#  - ci/environment.yml
   - ci/prebuild.yml
-  - ci/build.yml
-  - ci/test.yml
-  - ci/posttest.yml
-  - ci/deploy.yml
+#  - ci/build.yml
+#  - ci/test.yml
+#  - ci/posttest.yml
+#  - ci/deploy.yml

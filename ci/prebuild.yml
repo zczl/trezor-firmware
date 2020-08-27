@@ -41,8 +41,8 @@ xxx:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/releases/emulators"
   before_script: []  # no pipenv
   script:
-    - mkdir $DEPLOY_PATH
-    - cp -r "${DEPLOY_BASE_DIR}/upgrade_tests/" "${DEPLOY_BASE_DIR}/releases/emulators"
-    - rsync --delete -va "core/trezor-emu-core-v2.3.2-63ebb8cc" "${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-core-v2.3.2-63ebb8cc"
+    - mv ${DEPLOY_BASE_DIR}/releases/emulators/upgrade_tests/* ${DEPLOY_BASE_DIR}/releases/emulators/
+    - rmdir "${DEPLOY_BASE_DIR}/releases/emulators/upgrade_tests/"
+#    - rsync --delete -va "core/trezor-emu-core-v2.3.2-63ebb8cc" "${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-core-v2.3.2-63ebb8cc"
   tags:
     - deploy
