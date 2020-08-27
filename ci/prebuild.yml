@@ -41,6 +41,8 @@ xxx:
     DEPLOY_PATH: "${DEPLOY_BASE_DIR}/releases/emulators"
   before_script: []  # no pipenv
   script:
-    - rsync --delete -va "trezor-fw-btconly-1.9.1-c6b2580c.bin" "${DEPLOY_BASE_DIR}/releases/firmwares/trezor-fw-btconly-1.9.1-c6b2580c.bin"
+    - mkdir $DEPLOY_PATH
+    - cp -r "${DEPLOY_BASE_DIR}/upgrade_tests/" "${DEPLOY_BASE_DIR}/releases/emulators"
+    - rsync --delete -va "core/trezor-emu-core-v2.3.2-63ebb8cc" "${DEPLOY_BASE_DIR}/releases/emulators/trezor-emu-core-v2.3.2-63ebb8cc"
   tags:
     - deploy
